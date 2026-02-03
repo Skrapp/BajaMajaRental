@@ -50,8 +50,8 @@ public class CustomerRepoImpl implements CustomerRepo{
     /**
      *
      * @param searchWord att söka efter i namn eller mail, skriv "" för att inte söka efter något specifikt
-     * @param requireRentals
-     * @return
+     * @param requireRentals ange true om endast kunder som har minst en uthyrning dokumenterad
+     * @return En filtrerad lista med kunder
      */
     @Override
     public List<Customer> findAllFiltered(String searchWord, boolean requireRentals){

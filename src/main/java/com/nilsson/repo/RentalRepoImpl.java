@@ -1,5 +1,6 @@
 package com.nilsson.repo;
 
+import com.nilsson.entity.Customer;
 import com.nilsson.entity.Rental;
 import com.nilsson.entity.rentable.RentalObject;
 import org.hibernate.Session;
@@ -32,7 +33,21 @@ public class RentalRepoImpl implements RentalRepo{
     @Override
     public List<Rental> findAllByCustomerId(Long customerId) {
         System.out.println("WIP");
-        return List.of();
+        try(Session session = sessionFactory.openSession()){
+            String sql = """
+                    SELECT r.*
+                    FROM rentals r
+                    INNER JOIN customers c ON r.customer_id = c.id
+                    WHERE r.customer_id = :customerId
+                    """;
+
+
+            List<Rental> result =  session.createNativeQuery(sql, Rental.class)
+                    .setParameter("customerId", customerId)
+                    .getResultList();
+
+            return result;
+        }
     }
 
     /**

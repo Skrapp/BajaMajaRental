@@ -8,6 +8,7 @@ import com.nilsson.repo.RentalRepo;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 public class RentalService {
 
@@ -49,6 +50,12 @@ public class RentalService {
         return ChronoUnit.DAYS.between(startDate, endDate);
     }
 
+    public List<Rental> findAllByCustomerId(Long customerId){
+        if(customerId == null || customerId <= 0){
+            throw new IllegalArgumentException("KundID krävs.");
+            }
 
+        return rentalRepo.findAllByCustomerId(customerId);
+    }
 
 }

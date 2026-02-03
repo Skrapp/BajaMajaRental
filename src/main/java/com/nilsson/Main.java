@@ -111,9 +111,9 @@ public class Main {
             // Lägg till rental
             //---------------------------
 
-            //Välj kund
+            /*//Välj kund
 
-            customerService.findAllFiltered("sa",true).forEach(System.out::println);
+            customerService.findAll().forEach(System.out::println);
 
             System.out.println("Välj kund utifrån id");
 
@@ -148,27 +148,27 @@ public class Main {
                     bajaMaja.getRentalRate()
             );
 
-            System.out.println("Skapade: " + rental);
+            System.out.println("Skapade: " + rental);*/
 
             //--------------------------
-            // Filtrera BajaMaja
+            // Filtrera och sök BajaMaja
             //--------------------------
 
-            //--------------------------
-            // Filtrera Kunder
-            //--------------------------
+            //bajaMajaService.findAllFiltered("lång", false,0,3000,false).forEach(System.out::println);
 
             //--------------------------
-            // Sök BajaMaja
+            // Filtrera och sök Kunder
             //--------------------------
 
-            //--------------------------
-            // Sök kund
-            //--------------------------
+            //customerService.findAllFiltered("sa",true).forEach(System.out::println);
 
             //-------------------------
             // Visa rentals
             //-------------------------
+
+            System.out.println("Visar alla rentals av kund: " + customerService.findById(1L));
+
+            rentalService.findAllByCustomerId(1L).forEach(System.out::println);
 
             // ---------------------------
             // 2) Skapa demo-film + visning

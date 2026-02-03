@@ -11,4 +11,6 @@ public interface BajaMajaRepo {
     Optional<BajaMaja> findById(long id);
 
     List<BajaMaja> findAll();
+
+    List<BajaMaja> findAllFiltered(String searchWord, boolean requireAvailable, double minimumRate, double maximumRate, boolean requireHandicap);
 }

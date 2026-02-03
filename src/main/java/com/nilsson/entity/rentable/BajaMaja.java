@@ -25,10 +25,9 @@ public class BajaMaja {
     private boolean handicap;
 
     @Column(name = "type", nullable = false)
-    private RentalObject rentalObjectType;
+    private RentalObject type = RentalObject.BAJAMAJA;
 
     public BajaMaja(String name, String description, double rentalRate, int numberOfStalls, boolean handicap) {
-        super();
         this.name = name;
         this.description = description;
         this.rentalRate = rentalRate;
@@ -37,14 +36,12 @@ public class BajaMaja {
     }
 
     public BajaMaja(String name, double rentalRate, int numberOfStalls) {
-        super();
         this.name = name;
         this.rentalRate = rentalRate;
         this.numberOfStalls = numberOfStalls;
     }
 
     protected BajaMaja() {
-        rentalObjectType = RentalObject.BAJAMAJA;
     }
 
     public void setId(Long id) {
@@ -95,17 +92,17 @@ public class BajaMaja {
         this.handicap = handicap;
     }
 
-    public RentalObject getRentalObjectType() {
-        return rentalObjectType;
+    public RentalObject getType() {
+        return type;
     }
 
-    public void setRentalObjectType(RentalObject rentalObjectType) {
-        this.rentalObjectType = rentalObjectType;
+    public void setType(RentalObject rentalObjectType) {
+        this.type = rentalObjectType;
     }
 
     @Override
     public String toString() {
-        return rentalObjectType + "{" +
+        return type + "{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

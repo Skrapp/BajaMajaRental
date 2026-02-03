@@ -41,4 +41,8 @@ public class BajaMajaService {
     public List<BajaMaja> findAll(){
         return bajaMajaRepo.findAll();
     }
+
+    public List<BajaMaja> findAllFiltered(String searchWord, boolean requireAvailable, double minimumRate, double maximumRate, boolean requireHandicap) {
+        return bajaMajaRepo.findAllFiltered(searchWord, requireAvailable,minimumRate, maximumRate, requireHandicap);
+    }
 }
