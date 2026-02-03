@@ -39,4 +39,13 @@ public class Customer {
     public void setRentals(List<Rental> rentals) {
         this.rentals = rentals;
     }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

@@ -34,4 +34,8 @@ public class CustomerService {
     public List<Customer> findAll(){
         return customerRepository.findAll();
     }
+
+    public List<Customer> findAllFiltered(String searchWord, boolean requireRentals){
+        return customerRepository.findAllFiltered(searchWord, requireRentals);
+    }
 }

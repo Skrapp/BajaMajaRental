@@ -20,7 +20,7 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
         try(Session session = sessionFactory.openSession()){
             var tx = session.beginTransaction();
 
-            //Om objektet ej tidigare blivit sparat har den ej fått ett id tilldelat
+            //Om objektet ej tidigare blivit sparat har den ej fått ett id tilldelat, annars ska objektet uppdateras
             if(bajaMaja.getId() == null) {
                 session.persist(bajaMaja);
             } else {

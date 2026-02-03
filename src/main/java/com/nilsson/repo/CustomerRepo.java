@@ -12,4 +12,6 @@ public interface CustomerRepo {
     Optional<Customer> findById(Long id);
 
     List<Customer> findAll();
+
+    List<Customer> findAllFiltered(String searchWord, boolean requireRentals);
 }

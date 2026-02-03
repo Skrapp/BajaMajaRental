@@ -35,6 +35,15 @@ public class RentalRepoImpl implements RentalRepo{
         return List.of();
     }
 
+    /**
+     * Ser om uthyrningobjektet är redan uthyrt under den period som efterfrågas.
+     * TODO istället för att bara se på id göra en funktion för att se ifall den typen (namnet) finns tillgänglig för att kunna ha flera av samma modell
+     * @param rentalObjectType
+     * @param rentalObjectId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     @Override
     public boolean availableByRentalObjectAndDate(RentalObject rentalObjectType, long rentalObjectId, LocalDateTime startDate, LocalDateTime endDate) {
 
@@ -49,7 +58,7 @@ public class RentalRepoImpl implements RentalRepo{
                         AND rental_object_id = :rentalObjectId
                         AND start_date < :endDate
                         AND end_date > :startDate
-                        AND returned = false
+                        AND NOT returned
                     """;
 
             Number count = (Number) session.createNativeQuery(sql)

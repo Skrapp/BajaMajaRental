@@ -113,11 +113,11 @@ public class Main {
 
             //Välj kund
 
-            customerService.findAll().forEach(System.out::println);
+            customerService.findAllFiltered("sa",true).forEach(System.out::println);
 
             System.out.println("Välj kund utifrån id");
 
-            Long customerId = 1L;
+            Long customerId = scanner.nextLong();
 
             Customer customer = customerService.findById(customerId);
 
@@ -129,7 +129,7 @@ public class Main {
 
             System.out.println("Välj BajaMaja utifrån id");
 
-            Long bajaMajaId = 1L;
+            Long bajaMajaId = scanner.nextLong();
 
             BajaMaja bajaMaja = bajaMajaService.findById(bajaMajaId);
 
