@@ -1,7 +1,6 @@
 package com.nilsson.repo;
 
 import com.nilsson.entity.Customer;
-import com.nilsson.entity.rentable.BajaMaja;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -50,7 +49,7 @@ public class CustomerRepoImpl implements CustomerRepo{
     /**
      *
      * @param searchWord att söka efter i namn eller mail, skriv "" för att inte söka efter något specifikt
-     * @param requireRentals ange true om endast kunder som har minst en uthyrning dokumenterad
+     * @param requireRentals ange true för att få kunder som har minst en uthyrning dokumenterad
      * @return En filtrerad lista med kunder
      */
     @Override
@@ -75,10 +74,9 @@ public class CustomerRepoImpl implements CustomerRepo{
                         """;
             }
 
-            List<Customer> result = session.createNativeQuery(sql,Customer.class)
+            return session.createNativeQuery(sql,Customer.class)
                     .setParameter("searchWord", '%'+searchWord+'%')
                     .getResultList();
-            return result;
         }
     }
 }

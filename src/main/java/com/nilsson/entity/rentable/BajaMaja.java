@@ -2,6 +2,8 @@ package com.nilsson.entity.rentable;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "BajaMajas")
 public class BajaMaja {
@@ -24,7 +26,14 @@ public class BajaMaja {
     @Column(name = "handicap")
     private boolean handicap;
 
-    @Column(name = "type", nullable = false)
+    /*@ManyToMany
+    @JoinTable(name = "join_platforms_bajamajas",
+            joinColumns = {@JoinColumn(name = "bajamaja_id")},
+            inverseJoinColumns = {@JoinColumn(name = "platform_id")})
+    private List<Platform> platforms;*/
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false, updatable = false)
     private RentalObject type = RentalObject.BAJAMAJA;
 
     public BajaMaja(String name, String description, double rentalRate, int numberOfStalls, boolean handicap) {

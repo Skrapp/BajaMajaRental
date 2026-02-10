@@ -31,8 +31,6 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            System.out.println("=== Wigell Cinema Demo ===");
-
             // ---------------------------
             // 1) Skapa kund
             // ---------------------------
@@ -111,8 +109,8 @@ public class Main {
             // Lägg till rental
             //---------------------------
 
-            /*//Välj kund
-
+            //Välj kund
+            /*
             customerService.findAll().forEach(System.out::println);
 
             System.out.println("Välj kund utifrån id");
@@ -133,7 +131,7 @@ public class Main {
 
             BajaMaja bajaMaja = bajaMajaService.findById(bajaMajaId);
 
-            System.out.println("Valt objekt: " + bajaMaja.getRentalObjectType() + " " + bajaMaja.getId() + " : " + bajaMaja.getName());
+            System.out.println("Valt objekt: " + bajaMaja.getType() + " " + bajaMaja.getId() + " : " + bajaMaja.getName());
 
             //skapa Rental
 
@@ -141,10 +139,10 @@ public class Main {
 
             Rental rental = rentalService.createRental(
                     customer,
-                    bajaMaja.getRentalObjectType(),
+                    bajaMaja.getType(),
                     bajaMaja.getId(),
-                    LocalDateTime.of(2026,2,18,23,59),
-                    LocalDateTime.of(2026,2,20,23,59),
+                    LocalDateTime.of(2026,2,2,10,59),
+                    LocalDateTime.of(2026,2,7,23,59),
                     bajaMaja.getRentalRate()
             );
 
@@ -154,7 +152,7 @@ public class Main {
             // Filtrera och sök BajaMaja
             //--------------------------
 
-            //bajaMajaService.findAllFiltered("lång", false,0,3000,false).forEach(System.out::println);
+            //bajaMajaService.findAllFiltered("", false,0,0,false).forEach(System.out::println);
 
             //--------------------------
             // Filtrera och sök Kunder
@@ -166,47 +164,9 @@ public class Main {
             // Visa rentals
             //-------------------------
 
-            System.out.println("Visar alla rentals av kund: " + customerService.findById(1L));
+            /*System.out.println("Visar alla rentals av kund: " + customerService.findById(1L));
 
-            rentalService.findAllByCustomerId(1L).forEach(System.out::println);
-
-            // ---------------------------
-            // 2) Skapa demo-film + visning
-            // ---------------------------
-            /*System.out.println("\n--- Skapa demo-visning ---");
-
-            Movie movie = new Movie("The Conjuring (demo)", 112);
-            movie.setDetails(new MovieDetails("Demo-synopsis", "James Wan", "EN", 15));
-
-            Show show = new Show(LocalDateTime.now().plusDays(1), 1);
-            movie.addShow(show);
-
-            // Spara movie -> cascade sparar details + show
-            movieRepo.save(movie);
-
-            System.out.println("✅ Film sparad med ID: " + movie.getId());
-            System.out.println("✅ Visning sparad med ID: " + show.getId() +
-                    " (salong " + show.getScreenNumber() + ", start " + show.getStartsAt() + ")");
-
-            // ---------------------------
-            // 3) Köp biljett = gör bokning
-            // ---------------------------
-            System.out.println("\n--- Köp biljett ---");
-            System.out.print("Välj platsnummer (t.ex. 12): ");
-            int seatNo = Integer.parseInt(scanner.nextLine());
-
-            // Enkel QR-kod för demo: unik sträng
-            String qrCode = "QR-" + UUID.randomUUID();
-
-            Booking booking = bookingService.bookSeat(show, seatNo, customer.getName(), qrCode);
-
-            System.out.println("\n🎟️ Biljett köpt!");
-            System.out.println("Film: " + movie.getTitle());
-            System.out.println("Visning: " + show.getStartsAt() + " (salong " + show.getScreenNumber() + ")");
-            System.out.println("Plats: " + booking.getSeatNo());
-            System.out.println("Kund: " + booking.getCustomerName());
-            System.out.println("QR: " + booking.getTicket().getQrCode());
-            System.out.println("Booking-ID: " + booking.getId());*/
+            rentalService.findAllByCustomerId(1L).forEach(System.out::println);*/
 
         } finally {
             HibernateUtil.shutdown();

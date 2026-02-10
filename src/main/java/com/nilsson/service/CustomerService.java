@@ -36,6 +36,11 @@ public class CustomerService {
     }
 
     public List<Customer> findAllFiltered(String searchWord, boolean requireRentals){
+        if(searchWord == null)throw new IllegalArgumentException("Sökordet får inte vara null. Om inget speciellt söks efter använd \"\"");
+
+        //Om man inte söker efter nåt speciellt så vill man ha allt
+        if(searchWord.isBlank() && !requireRentals) return findAll();
+
         return customerRepository.findAllFiltered(searchWord, requireRentals);
     }
 }

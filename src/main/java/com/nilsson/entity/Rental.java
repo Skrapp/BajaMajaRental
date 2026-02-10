@@ -18,6 +18,7 @@ public class Rental {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "rental_object_type", nullable = false)
     private RentalObject rentalObjectType;
 

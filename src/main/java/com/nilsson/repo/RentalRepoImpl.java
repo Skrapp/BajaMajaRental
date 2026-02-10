@@ -1,17 +1,15 @@
 package com.nilsson.repo;
 
-import com.nilsson.entity.Customer;
 import com.nilsson.entity.Rental;
 import com.nilsson.entity.rentable.RentalObject;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class RentalRepoImpl implements RentalRepo{
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     public RentalRepoImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
@@ -71,9 +69,9 @@ public class RentalRepoImpl implements RentalRepo{
                     FROM rentals
                     WHERE rental_object_type = :rentalObjectType
                         AND rental_object_id = :rentalObjectId
+                        AND NOT returned
                         AND start_date < :endDate
                         AND end_date > :startDate
-                        AND NOT returned
                     """;
 
             Number count = (Number) session.createNativeQuery(sql)
