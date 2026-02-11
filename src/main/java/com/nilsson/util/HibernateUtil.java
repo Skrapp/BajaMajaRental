@@ -2,6 +2,9 @@ package com.nilsson.util;
 
 import com.nilsson.entity.*;
 import com.nilsson.entity.rentable.BajaMaja;
+import com.nilsson.entity.rentable.Decoration;
+import com.nilsson.entity.rentable.Platform;
+import com.nilsson.entity.rentable.RentalObject;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -52,7 +55,10 @@ public final class HibernateUtil {
 
             configuration.addAnnotatedClass(Customer.class);
             configuration.addAnnotatedClass(BajaMaja.class);
+            configuration.addAnnotatedClass(Decoration.class);
+            configuration.addAnnotatedClass(Platform.class);
             configuration.addAnnotatedClass(Rental.class);
+            configuration.addAnnotatedClass(RentalObject.class);
 
             ServiceRegistry serviceRegistry =
                     new StandardServiceRegistryBuilder()

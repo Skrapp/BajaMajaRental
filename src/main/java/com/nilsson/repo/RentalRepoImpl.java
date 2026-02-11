@@ -59,11 +59,7 @@ public class RentalRepoImpl implements RentalRepo{
      */
     @Override
     public boolean availableByRentalObjectAndDate(RentalObject rentalObjectType, long rentalObjectId, LocalDateTime startDate, LocalDateTime endDate) {
-
-        //Finns detta rentalObjectType id som rental
-        // & krockar datumen (är existing.startdate innan request.enddate och existing.enddate efter request.startdate)
         try (Session session = sessionFactory.openSession()) {
-
             String sql = """
                     SELECT COUNT(*)
                     FROM rentals
@@ -75,7 +71,7 @@ public class RentalRepoImpl implements RentalRepo{
                     """;
 
             Number count = (Number) session.createNativeQuery(sql)
-                    .setParameter("rentalObjectType", rentalObjectType)
+                    .setParameter("rentalObjectType", rentalObjectType.name())
                     .setParameter("rentalObjectId", rentalObjectId)
                     .setParameter("startDate", startDate)
                     .setParameter("endDate", endDate)

@@ -1,73 +1,66 @@
 package com.nilsson.repo;
 
 import com.nilsson.entity.rentable.BajaMaja;
+import com.nilsson.entity.rentable.Color;
+import com.nilsson.entity.rentable.Decoration;
 import com.nilsson.entity.rentable.RentalObject;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class BajaMajaRepoImpl implements BajaMajaRepo {
-
+public class DecorationRepoImpl implements DecorationRepo{
     private final SessionFactory sessionFactory;
 
-    public BajaMajaRepoImpl(SessionFactory sessionFactory) {
+    public DecorationRepoImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
     @Override
-    public void save(BajaMaja bajaMaja) {
+    public void save(Decoration decoration) {
         try(Session session = sessionFactory.openSession()){
             var tx = session.beginTransaction();
 
             //Om objektet ej tidigare blivit sparat har den ej fått ett id tilldelat, annars ska objektet uppdateras
-            if(bajaMaja.getId() == null) {
-                session.persist(bajaMaja);
+            if(decoration.getId() == null) {
+                session.persist(decoration);
             } else {
-                session.merge(bajaMaja);
+                session.merge(decoration);
             }
             tx.commit();
         }
-
     }
 
     @Override
-    public Optional<BajaMaja> findById(long id) {
+    public Optional<Decoration> findById(long id) {
         try(Session session = sessionFactory.openSession()){
-            return Optional.ofNullable(session.get(BajaMaja.class, id));
+            return Optional.ofNullable(session.get(Decoration.class, id));
         }
     }
 
     @Override
-    public List<BajaMaja> findAll() {
+    public List<Decoration> findAll() {
         try(Session session = sessionFactory.openSession()){
             var tx = session.beginTransaction();
-            List<BajaMaja> result = session.createQuery(
-                    "SELECT b FROM BajaMaja b", BajaMaja.class)
+            List<Decoration> result = session.createQuery(
+                            "FROM Decoration", Decoration.class)
                     .getResultList();
             tx.commit();
             return result;
         }
     }
 
-    /**
-     *Filtrerar enligt parametrar.
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
-     * @param requireAvailableToday Sätt true om det endast ska lista artiklar som inte är bokade idag
-     * @param minimumRate Minsta kostnaden av artikel. Sätt 0 för att inte filtrera enligt minsta
-     * @param maximumRate Största kostnaden för en artikel. Sätt 0 för att inte filtrera enligt största
-     * @param requireHandicap Sätt true för att endast inkludera handikappanpassade bajamajor
-     * @return returnerar en lista av BajaMajas enligt filtreringen
-     */
     @Override
-    public List<BajaMaja> findAllFiltered(String searchWord, boolean requireAvailableToday, double minimumRate, double maximumRate, boolean requireHandicap) {
+    public List<Decoration> findAllFiltered(String searchWord, boolean requireAvailableToday, double minimumRate, double maximumRate, List<Color> colors) {
         try(Session session = sessionFactory.openSession()) {
             String sql = """
-                SELECT b.*
-                FROM bajamajas b
+                
+                    SELECT d.*
+                FROM decorations d
                 """;
             String joinSQL = "";
             List<String> whereSQLList = new ArrayList<>();
@@ -75,25 +68,26 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
             //Ser vilka parametrar som är aktuella
             if(requireAvailableToday){
                 joinSQL = """
-                LEFT JOIN rentals r
-                ON r.rental_Object_Id = b.id
-                AND r.rental_Object_Type = :rentalType
-                AND r.start_Date < CURRENT_TIMESTAMP
-                AND NOT r.returned
+                    LEFT JOIN rentals r
+                        ON r.rental_Object_id = d.id
+                        AND r.rental_Object_Type = :rentalType
+                        AND r.start_Date < CURRENT_TIMESTAMP
+                        AND NOT r.returned
                 """;
                 whereSQLList.add("r.id IS NULL");
             }
             if (minimumRate > 0){
-                whereSQLList.add("b.rental_rate >= :minimumRate");
+                whereSQLList.add("d.rental_rate >= :minimumRate");
             }
             if (maximumRate > 0){
-                whereSQLList.add("b.rental_rate <= :maximumRate");
+                whereSQLList.add("d.rental_rate <= :maximumRate");
             }
             if(!searchWord.isBlank()){
-                whereSQLList.add("(b.name  like :searchWord OR b.description like :searchWord)");
+                whereSQLList.add("(d.name  like :searchWord OR d.description like :searchWord)");
             }
-            if (requireHandicap) {
-                whereSQLList.add("b.handicap = true");
+            boolean filterColors = colors != null && !colors.isEmpty() && colors.equals(Arrays.stream(Color.values()).toList());
+            if (filterColors) {
+                whereSQLList.add("(d.color = :colors)");
             }
 
             //Slår ihop till en SQL query
@@ -101,11 +95,11 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
                     + joinSQL
                     + (whereSQLList.isEmpty() ? "" : " WHERE " + String.join(" AND ", whereSQLList));
 
-            NativeQuery<BajaMaja> query = session.createNativeQuery(sql, BajaMaja.class);
+            NativeQuery<Decoration> query = session.createNativeQuery(sql, Decoration.class);
 
             //Ställer in parametrar
             if(requireAvailableToday){
-                query.setParameter("rentalType", RentalObject.BAJAMAJA.name());
+                query.setParameter("rentalType", RentalObject.DECORATION.name());
             }
             if (minimumRate > 0){
                 query.setParameter("minimumRate", minimumRate);
@@ -115,6 +109,14 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
             }
             if(!searchWord.isBlank()){
                 query.setParameter("searchWord", '%'+searchWord+'%');
+            }
+
+            if(filterColors){
+                List<String> colorStrings = colors.stream()
+                        .map(String::valueOf)
+                        .toList();
+                String colorSQL = String.join(" OR d.color = ", colorStrings);
+                query.setParameter("colors", colorSQL);
             }
 
             return query.getResultList();
