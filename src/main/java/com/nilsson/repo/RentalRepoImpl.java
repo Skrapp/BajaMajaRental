@@ -1,5 +1,6 @@
 package com.nilsson.repo;
 
+import com.nilsson.entity.Customer;
 import com.nilsson.entity.Rental;
 import com.nilsson.entity.rentable.RentalObject;
 import org.hibernate.Session;
@@ -7,6 +8,7 @@ import org.hibernate.SessionFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public class RentalRepoImpl implements RentalRepo{
     private final SessionFactory sessionFactory;
@@ -45,6 +47,13 @@ public class RentalRepoImpl implements RentalRepo{
                     .getResultList();
 
             return result;
+        }
+    }
+
+    @Override
+    public Optional<Rental> findById(Long id) {
+        try(Session session = sessionFactory.openSession()){
+            return Optional.ofNullable(session.get(Rental.class, id));
         }
     }
 

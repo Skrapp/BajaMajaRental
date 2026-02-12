@@ -28,8 +28,11 @@ public class Rental {
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
+
+    @Column(name = "return_date")
+    private LocalDateTime returnDate;
 
     @Column(name = "price", nullable = false)
     private Double price;
@@ -99,6 +102,14 @@ public class Rental {
         this.endDate = endDate;
     }
 
+    public LocalDateTime getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(LocalDateTime returnDate) {
+        this.returnDate = returnDate;
+    }
+
     public Double getPrice() {
         return price;
     }
@@ -124,7 +135,9 @@ public class Rental {
                 ", rentalObjectId=" + rentalObjectId +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
+                ", returnDate=" + returnDate +
                 ", price=" + price +
+                ", returned=" + returned +
                 '}';
     }
 }

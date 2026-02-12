@@ -227,13 +227,13 @@ public class Main {
 
             System.out.println("Sparad: " + b);
 
-*/
+
             System.out.println("Alla artiklar");
             decorationService.findAll().forEach(System.out::println);
 
             System.out.println("\nFiltrerade artiklar");
             decorationService.findAllFiltered("", false, 0, 0, Arrays.stream(Color.values()).toList()).forEach(System.out::println);
-
+*/
 
             //------------------------------
             // Lägg till, visa alla och filtrera plattformar
@@ -265,6 +265,26 @@ public class Main {
             System.out.println("\nFiltrerade artiklar");
             platformService.findAllFiltered("", true, 0, 0, 2L).forEach(System.out::println);
 */
+
+            //-------------------------------
+            // lämna tillbaka en uthyrning
+            //------------------------------
+
+            System.out.println("Lämnar tillbaka uthyrning.");
+
+            System.out.println("Visar alla rentals av kund: " + customerService.findById(1L));
+
+            rentalService.findAllByCustomerId(1L).forEach(System.out::println);
+
+            System.out.println("Välj rental-ID: ");
+
+            Long rentalId = scanner.nextLong();
+
+            rentalService.rentalReturnCheck(rentalId, LocalDateTime.now());
+            Rental rental = rentalService.returnRental(rentalId, LocalDateTime.now());
+
+            System.out.println("Tillbakalämnad");
+            System.out.println(rental);
 
         } finally {
             HibernateUtil.shutdown();
