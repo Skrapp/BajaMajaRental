@@ -2,20 +2,17 @@ package com.nilsson;
 
 import com.nilsson.entity.Customer;
 import com.nilsson.entity.Rental;
-import com.nilsson.entity.rentable.BajaMaja;
-import com.nilsson.entity.rentable.Color;
-import com.nilsson.entity.rentable.Decoration;
-import com.nilsson.entity.rentable.RentalObject;
+import com.nilsson.entity.rentable.*;
 import com.nilsson.exception.RentalObjectNotAvailableException;
 import com.nilsson.repo.*;
-import com.nilsson.service.CustomerService;
-import com.nilsson.service.BajaMajaService;
-import com.nilsson.service.DecorationService;
-import com.nilsson.service.RentalService;
+import com.nilsson.service.*;
 import com.nilsson.util.HibernateUtil;
 import org.hibernate.SessionFactory;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -34,6 +31,7 @@ public class Main {
         BajaMajaService bajaMajaService = new BajaMajaService(bajaMajaRepo);
         RentalService rentalService = new RentalService(rentalRepo);
         DecorationService decorationService = new DecorationService(decorationRepo);
+        PlatformService platformService = new PlatformService(new PlatformRepoImpl(sessionFactory), bajaMajaService);
 
         Scanner scanner = new Scanner(System.in);
 
@@ -116,7 +114,7 @@ public class Main {
             // Lägg till rental
             //---------------------------
 
-            //Välj kund
+            /*//Välj kund
             customerService.findAll().forEach(System.out::println);
 
             System.out.println("Välj kund utifrån id");
@@ -138,9 +136,9 @@ public class Main {
 
             switch (rentalObject){
                 case BAJAMAJA -> bajaMajaService.findAll().forEach(System.out::println);
-                case PLATFORM -> System.out.println("plattformar");
+                case PLATFORM -> platformService.findAll().forEach(System.out::println);
                 case DECORATION -> decorationService.findAll().forEach(System.out::println);
-                case null, default -> System.out.println("FEL!");
+                default -> System.out.println("FEL!");
             }
 
             System.out.println("Välj " + rentalObject.name().toLowerCase() +" utifrån id");
@@ -154,13 +152,17 @@ public class Main {
                     System.out.println("Valt objekt: " + bajaMaja.getType() + " " + bajaMaja.getId() + " : " + bajaMaja.getName());
                     rentalRate = bajaMaja.getRentalRate();
                 }
-                case PLATFORM -> System.out.println("plattformar");
+                case PLATFORM -> {
+                    Platform platform = platformService.findById(objectId);
+                    System.out.println("Valt objekt: " + platform.getType() + " " + platform.getId() + " : " + platform.getName());
+                    rentalRate = platform.getRentalRate();
+                }
                 case DECORATION -> {
                     Decoration decoration = decorationService.findById(objectId);
                     System.out.println("Valt objekt: " + decoration.getType() + " " + decoration.getId() + " : " + decoration.getName());
                     rentalRate = decoration.getRentalRate();
                 }
-                case null, default -> System.out.println("FEL!");
+                default -> System.out.println("FEL!");
             }
 
             //skapa Rental
@@ -180,13 +182,13 @@ public class Main {
                 System.out.println("Skapade: " + rental);
             } catch (RentalObjectNotAvailableException e) {
                 System.out.println("Rental kunde inte skapas: " + e.getMessage());
-            }
+            }*/
 
             //--------------------------
             // Filtrera och sök BajaMaja
             //--------------------------
 
-            bajaMajaService.findAllFiltered("", true,0,0,false).forEach(System.out::println);
+            //bajaMajaService.findAllFiltered("", true,0,0,false).forEach(System.out::println);
 
             //--------------------------
             // Filtrera och sök Kunder
@@ -214,7 +216,7 @@ public class Main {
             System.out.print("pris: ");
             int rentalFee = Integer.parseInt(scanner.nextLine());
 
-            System.out.print("Färg på dekoration: ");
+            System.out.println("Färg på dekoration: ");
             for(int i = 0 ; i < Color.values().length ; i++){
                 System.out.println(i + ": " + Color.values()[i]);
             }
@@ -225,14 +227,44 @@ public class Main {
 
             System.out.println("Sparad: " + b);
 
-             */
+*/
             System.out.println("Alla artiklar");
             decorationService.findAll().forEach(System.out::println);
 
             System.out.println("\nFiltrerade artiklar");
-            decorationService.findAllFiltered("", true, 0, 0, null).forEach(System.out::println);
+            decorationService.findAllFiltered("", false, 0, 0, Arrays.stream(Color.values()).toList()).forEach(System.out::println);
 
 
+            //------------------------------
+            // Lägg till, visa alla och filtrera plattformar
+            //------------------------------
+            /*System.out.println("Skapa en ny plattform");
+
+            System.out.print("namn: ");
+            String nameP = scanner.nextLine();
+
+            System.out.print("pris: ");
+            int rentalFee = Integer.parseInt(scanner.nextLine());
+
+            bajaMajaService.findAll().forEach(System.out::println);
+            System.out.print("Vilka BajaMajor passar det till, skriv id och separera med mellanslag:");
+
+            String[] idChoice = scanner.nextLine().trim().split(" ");
+            List<Long> ids = new ArrayList<>();
+            for(String idString : idChoice){
+                ids.add(Long.parseLong(idString));
+            }
+
+            Platform platform = platformService.createPlatform(nameP, null, rentalFee, ids);
+
+            System.out.println("Sparad: " + platform);
+
+            System.out.println("Alla artiklar");
+            platformService.findAll().forEach(System.out::println);
+
+            System.out.println("\nFiltrerade artiklar");
+            platformService.findAllFiltered("", true, 0, 0, 2L).forEach(System.out::println);
+*/
 
         } finally {
             HibernateUtil.shutdown();

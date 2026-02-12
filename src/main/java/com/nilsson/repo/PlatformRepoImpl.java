@@ -1,10 +1,12 @@
 package com.nilsson.repo;
 
-import com.nilsson.entity.rentable.BajaMaja;
-import com.nilsson.entity.rentable.Platform;
+import com.nilsson.entity.rentable.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +52,69 @@ public class PlatformRepoImpl implements PlatformRepo{
     }
 
     @Override
-    public List<Platform> findAllFiltered(String searchWord, boolean requireAvailable, double minimumRate, double maximumRate, Long bajaMajaId) {
-        return List.of();
+    public List<Platform> findAllFiltered(String searchWord, boolean requireAvailableToday, double minimumRate, double maximumRate, Long bajaMajaId) {
+        try(Session session = sessionFactory.openSession()) {
+            String sql = """
+                
+                    SELECT p.*
+                FROM platforms p
+                """;
+            String joinSQL = "";
+            List<String> whereSQLList = new ArrayList<>();
+
+            //Ser vilka parametrar som är aktuella
+            if(requireAvailableToday){
+                joinSQL = """
+                    LEFT JOIN rentals r
+                        ON r.rental_Object_id = p.id
+                        AND r.rental_Object_Type = :rentalType
+                        AND r.start_Date < CURRENT_TIMESTAMP
+                        AND NOT r.returned
+                """;
+                whereSQLList.add("r.id IS NULL");
+            }
+            if (minimumRate > 0){
+                whereSQLList.add("p.rental_rate >= :minimumRate");
+            }
+            if (maximumRate > 0){
+                whereSQLList.add("p.rental_rate <= :maximumRate");
+            }
+            if(!searchWord.isBlank()){
+                whereSQLList.add("(p.name  like :searchWord OR p.description like :searchWord)");
+            }
+            if (bajaMajaId > 0) {
+                joinSQL = joinSQL + """
+                INNER JOIN join_platforms_bajamajas pb
+                ON p.id = pb.platform_id
+                AND pb.bajamaja_id = :bajaMajaId
+                """;
+            }
+
+            //Slår ihop till en SQL query
+            sql = sql
+                    + joinSQL
+                    + (whereSQLList.isEmpty() ? "" : " WHERE " + String.join(" AND ", whereSQLList));
+
+            NativeQuery<Platform> query = session.createNativeQuery(sql, Platform.class);
+
+            //Ställer in parametrar
+            if(requireAvailableToday){
+                query.setParameter("rentalType", RentalObject.PLATFORM.name());
+            }
+            if (minimumRate > 0){
+                query.setParameter("minimumRate", minimumRate);
+            }
+            if (maximumRate > 0){
+                query.setParameter("maximumRate", maximumRate);
+            }
+            if(!searchWord.isBlank()){
+                query.setParameter("searchWord", '%'+searchWord+'%');
+            }
+            if(bajaMajaId > 0){
+                query.setParameter("bajaMajaId", bajaMajaId);
+            }
+
+            return query.getResultList();
+        }
     }
 }

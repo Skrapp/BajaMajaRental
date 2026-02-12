@@ -26,12 +26,6 @@ public class BajaMaja {
     @Column(name = "handicap")
     private boolean handicap;
 
-    /*@ManyToMany
-    @JoinTable(name = "join_platforms_bajamajas",
-            joinColumns = {@JoinColumn(name = "bajamaja_id")},
-            inverseJoinColumns = {@JoinColumn(name = "platform_id")})
-    private List<Platform> platforms;*/
-
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, updatable = false)
     private RentalObject type = RentalObject.BAJAMAJA;

@@ -85,7 +85,7 @@ public class DecorationRepoImpl implements DecorationRepo{
             if(!searchWord.isBlank()){
                 whereSQLList.add("(d.name  like :searchWord OR d.description like :searchWord)");
             }
-            boolean filterColors = colors != null && !colors.isEmpty() && colors.equals(Arrays.stream(Color.values()).toList());
+            boolean filterColors = colors != null && !colors.isEmpty() && !colors.equals(Arrays.stream(Color.values()).toList());
             if (filterColors) {
                 whereSQLList.add("(d.color = :colors)");
             }

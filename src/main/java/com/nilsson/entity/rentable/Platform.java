@@ -3,7 +3,9 @@ package com.nilsson.entity.rentable;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "platforms")
@@ -21,24 +23,23 @@ public class Platform {
     @Column(name = "rental_rate", nullable = false)
     private double rentalRate;
 
-    /*@ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "join_platforms_bajamajas",
             joinColumns = {@JoinColumn(name = "platform_id")},
             inverseJoinColumns = {@JoinColumn(name = "bajamaja_id")})
-    private List<BajaMaja> bajamajas = new ArrayList<>();*/
+    private Set<BajaMaja> bajamajas = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, updatable = false)
     private final RentalObject type = RentalObject.PLATFORM;
 
-    public Platform() {
+    protected Platform() {
     }
 
-    public Platform(String name, String description, double rentalRate, List<BajaMaja> bajamajas) {
+    public Platform(String name, String description, double rentalRate) {
         this.name = name;
         this.description = description;
         this.rentalRate = rentalRate;
-        //this.bajamajas = bajamajas;
     }
 
     public Platform(String name, double rentalRate) {
@@ -74,15 +75,29 @@ public class Platform {
         this.rentalRate = rentalRate;
     }
 
-    /*public List<BajaMaja> getBajamajas() {
+    public Set<BajaMaja> getBajamajas() {
         return bajamajas;
     }
 
-    public void setBajamajas(List<BajaMaja> bajamajas) {
+    public void setBajamajas(Set<BajaMaja> bajamajas) {
         this.bajamajas = bajamajas;
-    }*/
+    }
+
+    public void addBajaMaja(BajaMaja bajaMaja){
+        this.bajamajas.add(bajaMaja);
+    }
 
     public RentalObject getType() {
         return type;
+    }
+
+    @Override
+    public String toString() {
+        return type +"{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", rentalRate=" + rentalRate +
+                '}';
     }
 }
