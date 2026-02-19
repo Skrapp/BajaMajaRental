@@ -41,7 +41,6 @@ public class RentalRepoImpl implements RentalRepo{
                     WHERE r.customer_id = :customerId
                     """;
 
-
             List<Rental> result =  session.createNativeQuery(sql, Rental.class)
                     .setParameter("customerId", customerId)
                     .getResultList();
