@@ -15,4 +15,6 @@ public interface RentalRepo {
     Optional<Rental> findById(Long Id);
 
     boolean availableByRentalObjectAndDate(RentalObject rentalObjectType, long rentalObjectId, LocalDateTime startDate, LocalDateTime endTime);
+
+    List<Rental> findAllByRentalObjectId(RentalObject rentalObjectType, Long rentalObjectId, boolean fromToday);
 }

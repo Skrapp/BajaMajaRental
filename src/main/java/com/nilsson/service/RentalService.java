@@ -12,7 +12,6 @@ import com.nilsson.repo.RentalRepo;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class RentalService {
@@ -76,7 +75,7 @@ public class RentalService {
         return rental;
     }
 
-    public Rental returnRental(Long rentalId, LocalDateTime returnDate){
+    public Rental rentalReturn(Long rentalId, LocalDateTime returnDate){
         Optional<Rental> rentalOptional = rentalRepo.findById(rentalId);
         if(rentalOptional.isEmpty()) throw new RentalNotFoundException("Finns ingen rental med det id: " + rentalId);
 
@@ -92,11 +91,15 @@ public class RentalService {
     }
 
     public List<Rental> findAllByCustomerId(Long customerId){
-        if(customerId == null || customerId <= 0){
-            throw new IllegalArgumentException("KundID krävs.");
-            }
+        if(customerId == null || customerId <= 0) throw new IllegalArgumentException("KundID krävs.");
 
         return rentalRepo.findAllByCustomerId(customerId);
+    }
+
+    public List<Rental> findAllByRentalObjectId(RentalObject rentalObjectType, Long rentalObjectId, boolean fromToday){
+        if(rentalObjectId == null || rentalObjectId <= 0) throw new IllegalArgumentException("UthyrningsObjektID krävs.");
+
+        return rentalRepo.findAllByRentalObjectId(rentalObjectType, rentalObjectId, fromToday);
     }
 
     private long getDaysBetween(LocalDateTime startDate, LocalDateTime endDate) {

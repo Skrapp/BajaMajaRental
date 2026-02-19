@@ -4,6 +4,7 @@ import com.nilsson.entity.rentable.BajaMaja;
 import com.nilsson.entity.rentable.Platform;
 import com.nilsson.entity.rentable.RentalObject;
 import com.nilsson.exception.RentalObjectNotFoundException;
+import com.nilsson.repo.BajaMajaRepo;
 import com.nilsson.repo.PlatformRepo;
 
 import java.util.List;
@@ -11,9 +12,9 @@ import java.util.Optional;
 
 public class PlatformService {
     private final PlatformRepo platformRepo;
-    private final BajaMajaService bajaMajaService;
+    private final BajaMajaRepo bajaMajaService;
 
-    public PlatformService(PlatformRepo platformRepo, BajaMajaService bajaMajaService) {
+    public PlatformService(PlatformRepo platformRepo, BajaMajaRepo bajaMajaService) {
         this.platformRepo = platformRepo;
         this.bajaMajaService = bajaMajaService;
     }
@@ -24,7 +25,11 @@ public class PlatformService {
 
         Platform platform = new Platform(name.trim(), description, rentalRate);
         for(Long bajaMajaId : bajaMajaIds){
-            platform.addBajaMaja(bajaMajaService.findById(bajaMajaId));
+            Optional<BajaMaja> bajaMajaOptional = bajaMajaService.findById(bajaMajaId);
+            if(bajaMajaOptional.isEmpty()){
+                throw new RentalObjectNotFoundException(RentalObject.BAJAMAJA, bajaMajaId);
+            }
+            platform.addBajaMaja(bajaMajaOptional.get());
         }
         platformRepo.save(platform);
         return platform;

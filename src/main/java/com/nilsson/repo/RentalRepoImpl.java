@@ -32,13 +32,11 @@ public class RentalRepoImpl implements RentalRepo{
 
     @Override
     public List<Rental> findAllByCustomerId(Long customerId) {
-        System.out.println("WIP");
         try(Session session = sessionFactory.openSession()){
             String sql = """
-                    SELECT r.*
-                    FROM rentals r
-                    INNER JOIN customers c ON r.customer_id = c.id
-                    WHERE r.customer_id = :customerId
+                    SELECT *
+                    FROM rentals 
+                    WHERE customer_id = :customerId
                     """;
 
             List<Rental> result =  session.createNativeQuery(sql, Rental.class)
@@ -86,6 +84,29 @@ public class RentalRepoImpl implements RentalRepo{
                     .getSingleResult();
 
             return count.longValue() == 0;
+        }
+    }
+
+    @Override
+    public List<Rental> findAllByRentalObjectId(RentalObject rentalObjectType, Long rentalObjectId, boolean fromToday) {
+        try(Session session = sessionFactory.openSession()){
+            String sql = """
+                    SELECT *
+                    FROM rentals 
+                    WHERE rental_object_id = :rentalObjectId
+                    AND rental_object_type = :rentalObjectType
+                    AND NOT returned
+                    """;
+
+            if(fromToday){
+                sql = sql + "AND end_date > CURRENT_TIMESTAMP";
+            }
+            List<Rental> result =  session.createNativeQuery(sql, Rental.class)
+                    .setParameter("rentalObjectId", rentalObjectId)
+                    .setParameter("rentalObjectType", rentalObjectType.name())
+                    .getResultList();
+
+            return result;
         }
     }
 }

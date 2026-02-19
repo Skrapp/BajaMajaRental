@@ -1,18 +1,15 @@
 package com.nilsson;
 
-import com.nilsson.entity.Customer;
-import com.nilsson.entity.Rental;
-import com.nilsson.entity.rentable.*;
-import com.nilsson.exception.RentalObjectNotAvailableException;
 import com.nilsson.repo.*;
 import com.nilsson.service.*;
+import com.nilsson.ui.UIManager;
+import com.nilsson.ui.UIState;
 import com.nilsson.util.HibernateUtil;
 import org.hibernate.SessionFactory;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class Main {
@@ -25,17 +22,27 @@ public class Main {
         BajaMajaRepo bajaMajaRepo = new BajaMajaRepoImpl(sessionFactory);
         RentalRepo rentalRepo = new RentalRepoImpl(sessionFactory);
         DecorationRepo decorationRepo = new DecorationRepoImpl(sessionFactory);
+        PlatformRepo platformRepo = new PlatformRepoImpl(sessionFactory);
 
         // Services
         CustomerService customerService = new CustomerService(customerRepo);
         BajaMajaService bajaMajaService = new BajaMajaService(bajaMajaRepo);
         RentalService rentalService = new RentalService(rentalRepo);
         DecorationService decorationService = new DecorationService(decorationRepo);
-        PlatformService platformService = new PlatformService(new PlatformRepoImpl(sessionFactory), bajaMajaService);
+        PlatformService platformService = new PlatformService(platformRepo, bajaMajaRepo);
+
+        UIManager uiManager = new UIManager
+                (new BufferedReader(new InputStreamReader(System.in)),
+                        customerService,
+                        rentalService,
+                        bajaMajaService,
+                        decorationService,
+                        platformService);
 
         Scanner scanner = new Scanner(System.in);
 
         try {
+            uiManager.show(UIState.MAIN_MENU);
             // ---------------------------
             // 1) Skapa kund
             // ---------------------------
@@ -270,7 +277,7 @@ public class Main {
             // lämna tillbaka en uthyrning
             //------------------------------
 
-            System.out.println("Lämnar tillbaka uthyrning.");
+            /*System.out.println("Lämnar tillbaka uthyrning.");
 
             System.out.println("Visar alla rentals av kund: " + customerService.findById(1L));
 
@@ -284,9 +291,12 @@ public class Main {
             Rental rental = rentalService.returnRental(rentalId, LocalDateTime.now());
 
             System.out.println("Tillbakalämnad");
-            System.out.println(rental);
+            System.out.println(rental);*/
 
-        } finally {
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
+        finally {
             HibernateUtil.shutdown();
         }
     }
