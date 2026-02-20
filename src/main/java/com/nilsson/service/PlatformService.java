@@ -12,25 +12,19 @@ import java.util.Optional;
 
 public class PlatformService {
     private final PlatformRepo platformRepo;
-    private final BajaMajaRepo bajaMajaService;
+    private final BajaMajaRepo bajaMajaRepo;
 
-    public PlatformService(PlatformRepo platformRepo, BajaMajaRepo bajaMajaService) {
+    public PlatformService(PlatformRepo platformRepo, BajaMajaRepo bajaMajaRepo) {
         this.platformRepo = platformRepo;
-        this.bajaMajaService = bajaMajaService;
+        this.bajaMajaRepo = bajaMajaRepo;
     }
 
-    public Platform createPlatform(String name, String description, double rentalRate, List<Long> bajaMajaIds) {
+    public Platform createPlatform(String name, String description, double rentalRate) {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Namn krävs");
         if (rentalRate < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
 
         Platform platform = new Platform(name.trim(), description, rentalRate);
-        for(Long bajaMajaId : bajaMajaIds){
-            Optional<BajaMaja> bajaMajaOptional = bajaMajaService.findById(bajaMajaId);
-            if(bajaMajaOptional.isEmpty()){
-                throw new RentalObjectNotFoundException(RentalObject.BAJAMAJA, bajaMajaId);
-            }
-            platform.addBajaMaja(bajaMajaOptional.get());
-        }
+
         platformRepo.save(platform);
         return platform;
     }
@@ -69,5 +63,18 @@ public class PlatformService {
         if(searchWord.isBlank() && !requireAvailableToday && minimumRate <= 0 && maximumRate <= 0 && bajaMajaSuitableId <= 0)return findAll();
 
         return platformRepo.findAllFiltered(searchWord, requireAvailableToday,minimumRate, maximumRate, bajaMajaSuitableId);
+    }
+
+    public void addBajaMaja(Long platformId, long bajaMajaId) {
+        Platform platform = platformRepo.findById(platformId)
+                .orElseThrow(() -> new RentalObjectNotFoundException("Platform finns inte"));
+
+        BajaMaja bajaMaja = bajaMajaRepo.findById(bajaMajaId)
+                .orElseThrow(() -> new RentalObjectNotFoundException("BajaMaja finns inte"));
+
+        platform.addBajaMaja(bajaMaja);
+
+        platformRepo.save(platform);
+
     }
 }

@@ -23,6 +23,11 @@ public class CustomerService {
         return customer;
     }
 
+    public Customer update(Customer customer){
+        customerRepository.save(customer);
+        return customer;
+    }
+
     public Customer findById(Long id) {
         Optional<Customer> customerOptional = customerRepository.findById(id);
         if(customerOptional.isEmpty()){

@@ -145,4 +145,26 @@ public class InputMethod {
             }
         }
     }
+
+    //Separerar strängen så att endast det svar som gäller given prefix skickas tillbaka
+    public String getSectionFor(String entireString, String prefix) {
+        entireString = entireString.concat(" ");
+        return entireString.substring(entireString.indexOf(prefix) + prefix.length(), entireString.indexOf(" ", entireString.indexOf(prefix)));
+    }
+
+    public double parseDoubleSafe(String string) {
+        try {
+            return Double.parseDouble(string);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    public Long parseLongSafe(String string) {
+        try {
+            return Long.parseLong(string);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 }

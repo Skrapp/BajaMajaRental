@@ -23,8 +23,7 @@ public class RentalCreate {
     private PlatformService platformService;
     private DecorationService decorationService;
 
-    public RentalCreate(UIManager uiManager,
-                        InputMethod input,
+    public RentalCreate(InputMethod input,
                         RentalService rentalService,
                         CustomerService customerService,
                         BajaMajaService bajaMajaService,
@@ -38,7 +37,7 @@ public class RentalCreate {
         this.decorationService = decorationService;
     }
 
-    public UIState createRental() throws IOException {
+    public UIState show() throws IOException {
         //Välj kund
         customerService.findAll().forEach(System.out::println);
 

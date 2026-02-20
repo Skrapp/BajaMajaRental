@@ -2,10 +2,7 @@ package com.nilsson.entity.rentable;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "platforms")
@@ -84,7 +81,7 @@ public class Platform {
     }
 
     public void addBajaMaja(BajaMaja bajaMaja){
-        this.bajamajas.add(bajaMaja);
+        if(!bajamajas.contains(bajaMaja)) this.bajamajas.add(bajaMaja);
     }
 
     public RentalObject getType() {
@@ -100,4 +97,5 @@ public class Platform {
                 ", rentalRate=" + rentalRate +
                 '}';
     }
+
 }

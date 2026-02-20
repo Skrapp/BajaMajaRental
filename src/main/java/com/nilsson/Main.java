@@ -42,7 +42,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            uiManager.show(UIState.MAIN_MENU);
+            uiManager.run(UIState.MAIN_MENU);
             // ---------------------------
             // 1) Skapa kund
             // ---------------------------
