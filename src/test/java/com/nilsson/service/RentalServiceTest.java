@@ -4,6 +4,7 @@ import com.nilsson.entity.Customer;
 import com.nilsson.entity.Rental;
 import com.nilsson.entity.rentable.Decoration;
 import com.nilsson.entity.rentable.RentalObject;
+import com.nilsson.exception.RentalObjectNotAvailableException;
 import com.nilsson.repo.RentalRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class RentalServiceTest {
     private RentalRepo rentalRepo;
@@ -24,9 +24,11 @@ public class RentalServiceTest {
         rentalService = new RentalService(rentalRepo);
     }
 
-    //Renting when it is available
+    //Hyr ett objekt som är tillgängligt
     @Test
-    void rentRentalObject_whenDateIsAvailable(){
+    void rentRentalObject_whenDateIsAvailable_shouldSaveRental(){
+        RentalObject rentalObject = RentalObject.DECORATION;
+        Long rentalObjectId = 20L;
         LocalDateTime startTime = LocalDateTime.now();
         LocalDateTime endTime = LocalDateTime.now().plusDays(3);
 
@@ -34,8 +36,9 @@ public class RentalServiceTest {
         setIdViaReflection(customer, 17L);
 
         when(rentalRepo
-                .availableByRentalObjectAndDate(RentalObject.DECORATION, 20L, startTime, endTime))
+                .availableByRentalObjectAndDate(rentalObject, rentalObjectId, startTime, endTime))
                 .thenReturn(true);
+
 
         Rental rental = rentalService
                 .createRental(customer, RentalObject.DECORATION, 20L, startTime, endTime, 100.0);
@@ -48,8 +51,35 @@ public class RentalServiceTest {
         assertSame(customer, rental.getCustomer(), "Rental ska vara kopplad till Customer");
 
     }
-    //Renting when it already is rented
+    //Hyr ett objekt som redan har en bokning det datumet
+
+    @Test
+    void rentRentalObject_whenDateIsNotAvailable_shouldThrowException_andNotSave(){
+        RentalObject rentalObject = RentalObject.DECORATION;
+        Long rentalObjectId = 20L;
+        LocalDateTime startTime = LocalDateTime.now();
+        LocalDateTime endTime = LocalDateTime.now().plusDays(3);
+        double dailyRate = 100;
+        Customer customer = new Customer("Sara", "sara@mail.com");
+        setIdViaReflection(customer, 17L);
+
+        when(rentalRepo
+                .availableByRentalObjectAndDate(rentalObject, rentalObjectId, startTime, endTime))
+                .thenReturn(false);
+
+        assertThrows(RentalObjectNotAvailableException.class,
+                () -> rentalService.createRental(customer, rentalObject, rentalObjectId, startTime, endTime, dailyRate));
+
+        verify(rentalRepo).availableByRentalObjectAndDate(rentalObject, rentalObjectId, startTime, endTime);
+        verify(rentalRepo, never()).save(any());
+    }
+
     //returnera innan slutdatum
+    @Test
+    void returnRental_afterStartDateAndBeforeEndDate_shouldOnlyChangeReturnDateAndReturned(){
+
+    }
+
     //returnera innan startdatum
     //returnera efter slutdatum
     //returnera redan återlämnad

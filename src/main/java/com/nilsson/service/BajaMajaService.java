@@ -26,6 +26,10 @@ public class BajaMajaService {
     }
 
     public BajaMaja update(BajaMaja bajaMaja){
+        if (bajaMaja.getName() == null || bajaMaja.getName().isBlank()) throw new IllegalArgumentException("Namn krävs");
+        if (bajaMaja.getRentalRate() < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
+        if(bajaMaja.getNumberOfStalls() < 0) throw new IllegalArgumentException("Antal  måste vara 0 eller mer");
+
         bajaMajaRepo.save(bajaMaja);
         return bajaMaja;
     }
