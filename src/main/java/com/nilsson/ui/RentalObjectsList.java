@@ -5,6 +5,8 @@ import com.nilsson.exception.RentalObjectNotFoundException;
 import com.nilsson.service.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -242,7 +244,7 @@ public class RentalObjectsList {
             boolean availableToday = inputChoice.contains("idag");
 
             List<Decoration> decorations =
-                    decorationService.findAllFiltered(search, availableToday, min, max, colors);
+                    decorationService.findFiltered(search, availableToday, LocalDateTime.now(), min, max, colors);
 
             if (decorations.isEmpty()) {
                 System.out.println("Inga dekorationer matchar sökningen");

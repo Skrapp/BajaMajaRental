@@ -6,6 +6,8 @@ import com.nilsson.entity.rentable.RentalObject;
 import com.nilsson.exception.RentalObjectNotFoundException;
 import com.nilsson.repo.DecorationRepo;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -49,24 +51,30 @@ public class DecorationService {
     /**
      *Filtrerar enligt parametrar.
      * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
-     * @param requireAvailableToday Sätt true om det endast ska lista artiklar som inte är bokade idag
+     * @param requireAvailableByDate Sätt true om det endast ska lista artiklar som inte är bokade ett specifikt datum
      * @param minimumRate Minsta kostnaden av artikel. Sätt 0 eller mindre för att inte filtrera enligt minsta
      * @param maximumRate Största kostnaden för en artikel. Sätt 0 eller mindre för att inte filtrera enligt största
      * @param colors De färger som ska inkluderas i filtreringen. Sätt alla färger, tom lista eller null för att inte filtrera bort
      * @return returnerar en lista av Decorations enligt filtreringen
      */
-    public List<Decoration> findAllFiltered(String searchWord, boolean requireAvailableToday, double minimumRate, double maximumRate, List<Color> colors) {
-        if(searchWord == null) throw new IllegalArgumentException("Sökordet får inte vara null");
-        if(minimumRate > maximumRate && maximumRate != 0) throw new IllegalArgumentException("Minimumpriset får ej vara lägre än maximumpriset");
+    public List<Decoration> findFiltered(String searchWord, boolean requireAvailableByDate, LocalDateTime availableDate, double minimumRate, double maximumRate, List<Color> colors) {
+        if(minimumRate > maximumRate && maximumRate != 0) throw new IllegalArgumentException("Minimipriset får ej vara lägre än maximipriset");
+
+        if(searchWord == null) searchWord = "";
+        if(colors == null || colors.isEmpty())  colors = List.of(Color.values());
 
         //Om man inte söker efter nåt speciellt så vill man ha allt
-        if(searchWord.isBlank()
-                && !requireAvailableToday
-                && minimumRate <= 0
-                && maximumRate <= 0
-                && (colors == null || colors.isEmpty() || colors.equals(Arrays.stream(Color.values()).toList())))
+        if(searchWord.isBlank() &&minimumRate <= 0 && maximumRate <= 0 && !requireAvailableByDate && colors.containsAll(List.of(Color.values()))) {
             return findAll();
+        }
 
-        return decorationRepo.findAllFiltered(searchWord, requireAvailableToday,minimumRate, maximumRate, colors);
+        //1 000 000 känns som ett tillräckligt högt tak
+        if(maximumRate <= 0) maximumRate = 100000.0;
+
+        if(requireAvailableByDate){
+            return decorationRepo.findFilteredAvailableByDate(availableDate,searchWord,minimumRate,maximumRate,colors);
+        }
+
+        return decorationRepo.findFilteredDecorations(searchWord,minimumRate, maximumRate, colors);
     }
 }

@@ -71,7 +71,7 @@ public class RentalRepoImpl implements RentalRepo{
                     FROM rentals
                     WHERE rental_object_type = :rentalObjectType
                         AND rental_object_id = :rentalObjectId
-                        AND NOT returned
+                        AND return_date IS NULL
                         AND start_date < :endDate
                         AND end_date > :startDate
                     """;
@@ -95,7 +95,7 @@ public class RentalRepoImpl implements RentalRepo{
                     FROM rentals 
                     WHERE rental_object_id = :rentalObjectId
                     AND rental_object_type = :rentalObjectType
-                    AND NOT returned
+                    AND return_date IS NULL
                     """;
 
             if(fromToday){

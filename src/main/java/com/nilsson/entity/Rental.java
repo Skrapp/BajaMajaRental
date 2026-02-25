@@ -134,7 +134,7 @@ public class Rental {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", returnDate=" + returnDate +
-                ", price=" + dailyRate +
+                ", dailyRate=" + dailyRate +
                 '}';
     }
 }
