@@ -2,7 +2,6 @@ package com.nilsson.service;
 
 import com.nilsson.entity.Customer;
 import com.nilsson.entity.Rental;
-import com.nilsson.entity.rentable.Decoration;
 import com.nilsson.entity.rentable.RentalObject;
 import com.nilsson.exception.RentalObjectNotAvailableException;
 import com.nilsson.repo.RentalRepo;
@@ -28,7 +27,8 @@ public class RentalServiceTest {
     @Test
     void rentRentalObject_whenDateIsAvailable_shouldSaveRental(){
         RentalObject rentalObject = RentalObject.DECORATION;
-        Long rentalObjectId = 20L;
+        long rentalObjectId = 20L;
+        double dailyRate = 100;
         LocalDateTime startTime = LocalDateTime.now();
         LocalDateTime endTime = LocalDateTime.now().plusDays(3);
 
@@ -41,12 +41,12 @@ public class RentalServiceTest {
 
 
         Rental rental = rentalService
-                .createRental(customer, RentalObject.DECORATION, 20L, startTime, endTime, 100.0);
+                .createRental(customer, RentalObject.DECORATION, rentalObjectId, startTime, endTime, dailyRate);
 
         assertNotNull(rental);
 
         assertEquals(RentalObject.DECORATION, rental.getRentalObjectType());
-        assertEquals(300, rental.getPrice(), "Kostnaden av rental ska vara dailyRate multiplicerat med antal dagar");
+        assertEquals(100, rental.getDailyRate(), "Kostnaden av rental ska vara dailyRate multiplicerat med antal dagar");
         assertNull(rental.getReturnDate());
         assertSame(customer, rental.getCustomer(), "Rental ska vara kopplad till Customer");
 

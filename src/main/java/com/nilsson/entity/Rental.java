@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "rentals")
@@ -35,25 +34,22 @@ public class Rental {
     private LocalDateTime returnDate;
 
     //TODO använd dailyRate istället
-    @Column(name = "price", nullable = false)
-    private Double price;
+    @Column(name = "dailyRate", nullable = false)
+    private Double dailyRate;
 
-    //TODO behöver inte ha
-    @Column(name = "returned", nullable = false)
-    @ColumnDefault("false")
-    private Boolean returned;
+    @Column(name = "finalPayment")
+    private Double finalPayment;
 
     protected Rental() {
     }
 
-    public Rental(Customer customer, RentalObject rentalObjectType, Long rentalObjectId, LocalDateTime startDate, LocalDateTime endDate, Double price) {
+    public Rental(Customer customer, RentalObject rentalObjectType, Long rentalObjectId, LocalDateTime startDate, LocalDateTime endDate, Double dailyRate) {
         this.customer = customer;
         this.rentalObjectType = rentalObjectType;
         this.rentalObjectId = rentalObjectId;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.price = price;
-        this.returned = false;
+        this.dailyRate = dailyRate;
     }
 
     public void setId(Long id) {
@@ -112,20 +108,20 @@ public class Rental {
         this.returnDate = returnDate;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getDailyRate() {
+        return dailyRate;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setDailyRate(Double dailyRate) {
+        this.dailyRate = dailyRate;
     }
 
-    public boolean isReturned() {
-        return returned;
+    public Double getFinalPayment() {
+        return finalPayment;
     }
 
-    public void setReturned(boolean returned) {
-        this.returned = returned;
+    public void setFinalPayment(Double finalPayment) {
+        this.finalPayment = finalPayment;
     }
 
     @Override
@@ -138,8 +134,7 @@ public class Rental {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", returnDate=" + returnDate +
-                ", price=" + price +
-                ", returned=" + returned +
+                ", price=" + dailyRate +
                 '}';
     }
 }

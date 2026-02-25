@@ -83,7 +83,7 @@ public class RentalCreate {
         }
 
         Long objectId = null;
-        double rentalRate = 0;
+        double dailyRate = 0;
         boolean noRentalObject = true;
         while (noRentalObject) {
             try {
@@ -97,19 +97,19 @@ public class RentalCreate {
                     case BAJAMAJA -> {
                         BajaMaja bajaMaja = bajaMajaService.findById(objectId);
                         System.out.println("Valt objekt: " + bajaMaja.getType() + " " + bajaMaja.getId() + " : " + bajaMaja.getName());
-                        rentalRate = bajaMaja.getRentalRate();
+                        dailyRate = bajaMaja.getRentalRate();
                         noRentalObject = false;
                     }
                     case PLATFORM -> {
                         Platform platform = platformService.findById(objectId);
                         System.out.println("Valt objekt: " + platform.getType() + " " + platform.getId() + " : " + platform.getName());
-                        rentalRate = platform.getRentalRate();
+                        dailyRate = platform.getRentalRate();
                         noRentalObject = false;
                     }
                     case DECORATION -> {
                         Decoration decoration = decorationService.findById(objectId);
                         System.out.println("Valt objekt: " + decoration.getType() + " " + decoration.getId() + " : " + decoration.getName());
-                        rentalRate = decoration.getRentalRate();
+                        dailyRate = decoration.getRentalRate();
                         noRentalObject = false;
                     }
                 }
@@ -132,7 +132,7 @@ public class RentalCreate {
             LocalDateTime endDate = input.getInputDate().withHour(16);
             System.out.println("Slutdatum: " + endDate);
 
-            //skapa Rental
+            //Skapa Rental
             try {
                 System.out.println("Skapar rental");
 
@@ -142,7 +142,7 @@ public class RentalCreate {
                         objectId,
                         startDate,
                         endDate,
-                        rentalRate
+                        dailyRate
                 );
 
                 System.out.println("Skapade: " + rental);

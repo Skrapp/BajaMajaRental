@@ -68,7 +68,7 @@ public class RentalReturn {
         }
 
         try {
-            Rental rental = rentalService.completeReturn(rentalId, LocalDateTime.now());
+            Rental rental = rentalService.returnRental(rentalId, LocalDateTime.now());
 
             System.out.println("Tillbakalämnad");
             System.out.println(rental);
