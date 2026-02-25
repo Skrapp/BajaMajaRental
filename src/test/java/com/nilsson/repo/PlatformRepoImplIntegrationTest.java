@@ -57,6 +57,6 @@ public class PlatformRepoImplIntegrationTest {
 
         assertNotNull(platform.getId());
         assertEquals(2, platform.getBajamajas().size(),
-                "Platform ska ha två kopplade BajaMajor");
+                "Plattformen ska ha två kopplade BajaMajor");
     }
 }

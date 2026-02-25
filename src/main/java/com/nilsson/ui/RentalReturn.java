@@ -68,14 +68,13 @@ public class RentalReturn {
         }
 
         try {
-            rentalService.rentalReturnCheck(rentalId, LocalDateTime.now());
-            Rental rental = rentalService.rentalReturn(rentalId, LocalDateTime.now());
+            Rental rental = rentalService.completeReturn(rentalId, LocalDateTime.now());
 
             System.out.println("Tillbakalämnad");
             System.out.println(rental);
             return UIState.MAIN_MENU;
         } catch (RentalAlreadyReturnedException e) {
-            System.out.println("Denna uthyrning är redan återlämnad");
+            System.out.println(e.getMessage());
             return UIState.MAIN_MENU;
         }
     }

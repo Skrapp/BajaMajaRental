@@ -50,44 +50,60 @@ public class RentalService {
         return rental;
     }
 
-    public Rental rentalReturnCheck(Long rentalId, LocalDateTime returnDate){
+    public Rental completeReturn(Long rentalId, LocalDateTime returnDate){
         Optional<Rental> rentalOptional = rentalRepo.findById(rentalId);
-        if(rentalOptional.isEmpty()) throw new RentalNotFoundException("Finns ingen rental med det id: " + rentalId);
+        if(rentalOptional.isEmpty()) throw new RentalNotFoundException("Finns ingen uthyrning med id: " + rentalId);
 
         Rental rental = rentalOptional.get();
-        if(rental.getReturnDate() != null)
+
+        //Ser ifall uthyrningen redan är tillbakalämnad
+        if(rental.getReturnDate() != null )
             throw new RentalAlreadyReturnedException("Uthyrningen med id " + rental.getId() + " är redan tillbakalämnad.");
-        if(rental.isReturned()) return rental;
 
-        if(returnDate.isAfter(rental.getEndDate())){
-            double extraPayment = (rental.getPrice() / getDaysBetween(rental.getStartDate(), rental.getEndDate())) * 1.1
-                            * getDaysBetween(rental.getEndDate(), returnDate);
-            System.out.println("Kräver mer i betalning: " + extraPayment + "kr");
-            //Kalla på paymentService?
-            rental.setPrice(rental.getPrice() + extraPayment);
-        } else if (returnDate.isBefore(rental.getStartDate()) && getDaysBetween(returnDate, rental.getStartDate()) >= 5) {
-            System.out.println("Återbetalning: " + rental.getPrice() + "kr");
-            //Kalla på paymentService?
-            rental.setPrice(0.0);
-        }
-        rental.setReturned(true);
-        rentalRepo.save(rental);
-        return rental;
-    }
+        double extra = calculateExtraPayment(rental, returnDate);
+        rental.setPrice(rental.getPrice() + extra);
 
-    public Rental rentalReturn(Long rentalId, LocalDateTime returnDate){
-        Optional<Rental> rentalOptional = rentalRepo.findById(rentalId);
-        if(rentalOptional.isEmpty()) throw new RentalNotFoundException("Finns ingen rental med det id: " + rentalId);
-
-        Rental rental = rentalOptional.get();
-        if(rental.getReturnDate() != null)
-            throw new RentalAlreadyReturnedException("Uthyrningen med id " + rental.getId() + " är redan tillbakalämnad.");
-        if(!rental.isReturned())
-            throw new RentalReturnCheckException("Uthyrningen med id " + rental.getId() + " behöver genomföra en återlämningscheck.");
+        double refund = calculateRefund(rental, returnDate);
+        rental.setPrice(rental.getPrice() - refund);
 
         rental.setReturnDate(returnDate);
         rentalRepo.save(rental);
+
+        if(extra > 0){
+            System.out.println("Payment service happening, kund ska betala: " + extra);
+            //Om paymentService, hade kunna gjort med någon typ av try/catch
+        }
+
+        if(refund > 0){
+            System.out.println("Payment service happening, kund ska bli återbetald: " + refund);
+            //Om paymentService, hade kunna gjort med någon typ av try/catch
+        }
+
         return rental;
+    }
+
+    private double calculateRefund(Rental rental, LocalDateTime returnDate) {
+        //om man returnerar (avbryter) 7 dagar innan startdatum blir allt återbetalat
+        if(returnDate.isBefore(rental.getStartDate()) && getDaysBetween(returnDate, rental.getStartDate()) <= 7){
+            return rental.getPrice();
+        }
+
+        return 0;
+
+    }
+
+    private double calculateExtraPayment(Rental rental, LocalDateTime returnDate) {
+        //om man returnerar innan utsatt tid betalar kunden inget extra
+        if(returnDate.isBefore(rental.getEndDate())){
+            return 0;
+        }
+
+        long plannedDays = getDaysBetween(rental.getStartDate(), rental.getEndDate());
+        long extraDays = getDaysBetween(rental.getEndDate(), returnDate);
+        double dailyRate = rental.getPrice() / plannedDays;
+        double lateMultiplier = 1.2;
+
+        return extraDays * dailyRate * lateMultiplier;
     }
 
     public List<Rental> findAllByCustomerId(Long customerId){

@@ -34,9 +34,11 @@ public class Rental {
     @Column(name = "return_date")
     private LocalDateTime returnDate;
 
+    //TODO använd dailyRate istället
     @Column(name = "price", nullable = false)
     private Double price;
 
+    //TODO behöver inte ha
     @Column(name = "returned", nullable = false)
     @ColumnDefault("false")
     private Boolean returned;
