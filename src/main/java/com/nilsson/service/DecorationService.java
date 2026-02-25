@@ -27,15 +27,18 @@ public class DecorationService {
     }
 
     public Decoration update(Decoration decoration){
+        if (decoration.getName() == null || decoration.getName().isBlank()) throw new IllegalArgumentException("Namn krävs");
+        if (decoration.getRentalRate() < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
+
         decorationRepo.save(decoration);
         return decoration;
     }
 
     public Decoration findById(Long id){
+        if(id <= 0) throw new IllegalArgumentException("ID är inte godkänt.");
+
         Optional<Decoration> decorationOptional = decorationRepo.findById(id);
-
         if(decorationOptional.isEmpty()) throw new RentalObjectNotFoundException(RentalObject.DECORATION, id);
-
         return decorationOptional.get();
     }
 

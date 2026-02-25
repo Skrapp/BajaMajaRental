@@ -107,13 +107,13 @@ public class RentalService {
     }
 
     public List<Rental> findAllByCustomerId(Long customerId){
-        if(customerId == null || customerId <= 0) throw new IllegalArgumentException("KundID krävs.");
+        if(customerId == null || customerId <= 0) throw new IllegalArgumentException("KundID är inte godkänt.");
 
         return rentalRepo.findAllByCustomerId(customerId);
     }
 
     public List<Rental> findAllByRentalObjectId(RentalObject rentalObjectType, Long rentalObjectId, boolean fromToday){
-        if(rentalObjectId == null || rentalObjectId <= 0) throw new IllegalArgumentException("UthyrningsObjektID krävs.");
+        if(rentalObjectId == null || rentalObjectId <= 0) throw new IllegalArgumentException("UthyrningsObjektID är inte godkänt.");
 
         return rentalRepo.findAllByRentalObjectId(rentalObjectType, rentalObjectId, fromToday);
     }

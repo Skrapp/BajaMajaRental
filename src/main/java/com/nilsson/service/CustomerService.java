@@ -24,11 +24,16 @@ public class CustomerService {
     }
 
     public Customer update(Customer customer){
+        if (customer.getName() == null || customer.getName().isBlank()) throw new IllegalArgumentException("name krävs");
+        if (customer.getEmail() == null || customer.getEmail().isBlank()) throw new IllegalArgumentException("email krävs");
+
         customerRepository.save(customer);
         return customer;
     }
 
     public Customer findById(Long id) {
+        if(id <= 0) throw new IllegalArgumentException("ID är inte godkänt.");
+
         Optional<Customer> customerOptional = customerRepository.findById(id);
         if(customerOptional.isEmpty()){
             throw new CustomerNotFoundException(id);

@@ -30,15 +30,18 @@ public class PlatformService {
     }
 
     public Platform update(Platform platform){
+        if (platform.getName() == null || platform.getName().isBlank()) throw new IllegalArgumentException("Namn krävs");
+        if (platform.getRentalRate() < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
+
         platformRepo.save(platform);
         return platform;
     }
 
     public Platform findById(Long id){
+        if(id <= 0) throw new IllegalArgumentException("ID är inte godkänt.");
+
         Optional<Platform> platformOptional = platformRepo.findById(id);
-
         if(platformOptional.isEmpty()) throw new RentalObjectNotFoundException(RentalObject.BAJAMAJA, id);
-
         return platformOptional.get();
     }
 

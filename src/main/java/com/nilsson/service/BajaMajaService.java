@@ -35,10 +35,10 @@ public class BajaMajaService {
     }
 
     public BajaMaja findById(Long id){
+        if(id <= 0) throw new IllegalArgumentException("UthyrningsObjektID är inte godkänt.");
+
         Optional<BajaMaja> bajaMajaOptional = bajaMajaRepo.findById(id);
-
         if(bajaMajaOptional.isEmpty()) throw new RentalObjectNotFoundException(RentalObject.BAJAMAJA, id);
-
         return bajaMajaOptional.get();
     }
 
