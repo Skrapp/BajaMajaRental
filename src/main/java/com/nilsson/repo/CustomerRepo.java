@@ -22,6 +22,4 @@ public interface CustomerRepo {
     List<Customer> findFilteredWithLateRentals(String searchWord);
     List<Customer> findFilteredSortByNameAsc(String searchWord);
     List<Customer> findFilteredSortByNameDesc(String searchWord);
-
-    List<Customer> findFiltered(String searchWord, boolean requireRentals);
 }

@@ -58,6 +58,13 @@ public class CustomerService {
         NOT_REQUIRED
     }
 
+    /**
+     * Hämtar en lista av kunder baserat på ett sökord, uthyrningsstatus samt sortering.
+     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param requireRental anger om resultatet ska begränsas utifrån kundens uthyrningar.
+     * @param orderBy anger sorteringsordning.
+     * @return en lista av Kunder som matchar angivna filter och sortering.
+     */
     public List<Customer> findAllFiltered(String searchWord, RequireRental requireRental, SortOrder orderBy){
         if(searchWord == null || searchWord.isBlank()) searchWord = "";
         if(orderBy == null) orderBy = SortOrder.DEFAULT;

@@ -46,7 +46,11 @@ public class CustomerRepoImpl implements CustomerRepo{
         }
     }
 
-
+    /**
+     * Filtrerar enligt kunder med någon registrerad uthyrningar och ingående parametrar och sorterar enligt kundnamn i fallande ordning
+     * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
+     * @return returnerar en lista av kunder enligt filtreringen och sorteringen
+     */
     @Override
     public List<Customer> findFilteredWithAnyRentalsSortByNameDesc(String searchWord) {
         try(Session session = sessionFactory.openSession()){
@@ -64,7 +68,11 @@ public class CustomerRepoImpl implements CustomerRepo{
                     .getResultList();
         }
     }
-
+    /**
+     * Filtrerar enligt kunder med någon registrerad uthyrningar och ingående parametrar och sorterar enligt kundnamn i stigande ordning
+     * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
+     * @return returnerar en lista av kunder enligt filtreringen och sorteringen
+     */
     @Override
     public List<Customer> findFilteredWithAnyRentalsSortByNameAsc(String searchWord) {
         try(Session session = sessionFactory.openSession()){
@@ -86,7 +94,7 @@ public class CustomerRepoImpl implements CustomerRepo{
 
     /**
      * Filtrerar enligt kunder med aktiva uthyrningar och ingående parametrar och sorterar enligt namn i stigande ordning
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
      * @return returnerar en lista av kunder enligt filtreringen och sorteringen
      */
     @Override
@@ -112,7 +120,7 @@ public class CustomerRepoImpl implements CustomerRepo{
 
     /**
      * Filtrerar enligt kunder med aktiva uthyrningar och ingående parametrar och sorterar enligt namn i fallande ordning
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
      * @return returnerar en lista av kunder enligt filtreringen och sorteringen
      */
     @Override
@@ -137,13 +145,9 @@ public class CustomerRepoImpl implements CustomerRepo{
     }
 
     /**
-     * Retrieves a list of customers who have late rentals, filtered by the specified search word
-     * and sorted by customer name in ascending order. A customer is considered to have late
-     * rentals if there are rentals with no return date and an end date earlier than the current timestamp.
-     *
-     * @param searchWord the search term to filter customers by their name or email. Use an empty string ("")
-     *                   to retrieve all customers with late rentals without applying a name or email filter.
-     * @return a list of customers matching the filtering and sorting criteria
+     * Filtrerar enligt kunder med försenade uthyrningar och ingående parametrar och sorterar enligt kundnamn i stigande ordning
+     * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
+     * @return returnerar en lista av kunder enligt filtreringen och sorteringen
      */
     @Override
     public List<Customer> findFilteredWithLateRentalsSortByNameAsc(String searchWord) {
@@ -164,7 +168,11 @@ public class CustomerRepoImpl implements CustomerRepo{
                     .getResultList();
         }
     }
-
+    /**
+     * Filtrerar enligt kunder med försenade uthyrningar och ingående parametrar och sorterar enligt kundnamn i fallande ordning
+     * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
+     * @return returnerar en lista av kunder enligt filtreringen och sorteringen
+     */
     @Override
     public List<Customer> findFilteredWithLateRentalsSortByNameDesc(String searchWord) {
         try(Session session = sessionFactory.openSession()){
@@ -184,7 +192,11 @@ public class CustomerRepoImpl implements CustomerRepo{
                     .getResultList();
         }
     }
-
+    /**
+     * Filtrerar enligt kunder med försenade uthyrningar och ingående parametrar och sorterar enligt kund med den uthyrning som är försenad mest
+     * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
+     * @return returnerar en lista av kunder enligt filtreringen och sorteringen
+     */
     @Override
     public List<Customer> findFilteredWithLateRentals(String searchWord) {
         try(Session session = sessionFactory.openSession()){
@@ -208,7 +220,7 @@ public class CustomerRepoImpl implements CustomerRepo{
 
     /**
      * Filtrerar enligt ingående parametrar och sorterar enligt namn i stigande ordning
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
      * @return returnerar en lista av kunder enligt filtreringen och sorteringen
      */
     @Override
@@ -231,7 +243,7 @@ public class CustomerRepoImpl implements CustomerRepo{
 
     /**
      * Filtrerar enligt ingående parametrar och sorterar enligt namn i fallande ordning
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
      * @return returnerar en lista av kunder enligt filtreringen och sorteringen
      */
     @Override
@@ -247,40 +259,6 @@ public class CustomerRepoImpl implements CustomerRepo{
 
 
             return session.createQuery(hql,Customer.class)
-                    .setParameter("searchWord", '%'+searchWord+'%')
-                    .getResultList();
-        }
-    }
-
-    /**
-     *
-     * @param searchWord att söka efter i namn eller mail, skriv "" för att inte söka efter något specifikt
-     * @param requireRentals ange true för att få kunder som har minst en uthyrning dokumenterad
-     * @return En filtrerad lista med kunder
-     */
-    @Override
-    public List<Customer> findFiltered(String searchWord, boolean requireRentals){
-        try(Session session = sessionFactory.openSession()){
-            String hql;
-            if(requireRentals) {
-                hql = """
-                        SELECT c.*
-                        FROM customers c
-                            INNER JOIN rentals r ON c.id = r.customer_id
-                        WHERE c.name like :searchWord
-                            OR c.email like :searchWord
-                        GROUP BY c.id
-                        """;
-            }else {
-                hql = """
-                        SELECT c.*
-                        FROM customers c
-                        WHERE c.name like :searchWord
-                            OR c.email like :searchWord
-                        """;
-            }
-
-            return session.createNativeQuery(hql,Customer.class)
                     .setParameter("searchWord", '%'+searchWord+'%')
                     .getResultList();
         }

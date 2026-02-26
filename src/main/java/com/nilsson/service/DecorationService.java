@@ -47,7 +47,7 @@ public class DecorationService {
     }
 
     /**
-     *Filtrerar enligt parametrar.
+     * Filtrerar enligt parametrar.
      * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
      * @param requireAvailableByDate Sätt true om det endast ska lista artiklar som inte är bokade ett specifikt datum
      * @param minimumRate Minsta kostnaden av artikel. Sätt 0 eller mindre för att inte filtrera enligt minsta
