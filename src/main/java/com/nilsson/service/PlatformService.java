@@ -20,17 +20,18 @@ public class PlatformService {
         this.bajaMajaRepo = bajaMajaRepo;
     }
 
-    public Platform createPlatform(String name, String description, double rentalRate) {
+    public Platform createPlatform(String name, double rentalRate) {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Namn krävs");
         if (rentalRate < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
 
-        Platform platform = new Platform(name.trim(), description, rentalRate);
+        Platform platform = new Platform(name.trim(), rentalRate);
 
         platformRepo.save(platform);
         return platform;
     }
 
     public Platform update(Platform platform){
+        if (platform.getId() == null) throw new IllegalArgumentException("Denna plattform har inte tidigare sparats, skapa en ny");
         if (platform.getName() == null || platform.getName().isBlank()) throw new IllegalArgumentException("Namn krävs");
         if (platform.getRentalRate() < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
 

@@ -29,6 +29,7 @@ public class RentalReturn {
         Customer customer;
         while (true) {
             try {
+                customerService.findAll().forEach(System.out::println);
                 customerId = input.getInputLong("Välj kund utifrån id (skriv 0 för att avbryta).");
 
                 if (customerId == 0L) {

@@ -43,11 +43,12 @@ public class RentalService {
         if(dailyRate < 0)
             throw new IllegalArgumentException("DailyRate är inte godkänt: " + dailyRate);
         if(!rentalRepo.availableByRentalObjectAndDate(rentalObjectType, rentalObjectId, startDate, endDate))
-            throw new RentalObjectNotAvailableException(rentalObjectType + " med id  " + rentalObjectId + " är inte tillgängligt de datumen.");
+            throw new RentalObjectNotAvailableException(rentalObjectType + " med id  " + rentalObjectId + " är inte tillgängligt de valda datumen.");
 
         Rental rental = new Rental(customer, rentalObjectType, rentalObjectId, startDate, endDate, dailyRate);
+        rental.setOriginalPayment(calculatePayment(rental));
 
-        System.out.println("PaymentService: " + calculatePayment(rental));
+        System.out.println("PaymentService charge: " + rental.getOriginalPayment());
         //Om paymentService, om det kastar exception går inte rental igenom
 
         rentalRepo.save(rental);
@@ -64,10 +65,10 @@ public class RentalService {
         if(rental.getReturnDate() != null)
             throw new RentalAlreadyReturnedException("Uthyrningen med id " + rental.getId() + " är redan tillbakalämnad.");
 
-        double currentPayment = calculatePayment(rental);
         double extra = calculateExtraPayment(rental.getEndDate(), returnDate, rental.getDailyRate());
-        double refund = calculateRefund(rental.getStartDate(), returnDate, currentPayment);
-        rental.setFinalPayment(currentPayment + extra - refund);
+        rental.setExtraPayment(extra);
+        double refund = calculateRefund(rental.getStartDate(), returnDate, rental.getOriginalPayment());
+        rental.setRefund(refund);
 
         rental.setReturnDate(returnDate);
         rentalRepo.save(rental);
@@ -86,12 +87,15 @@ public class RentalService {
     }
 
     private double calculatePayment(Rental rental){
-        return getDaysBetween(rental.getStartDate(), rental.getEndDate()) * rental.getDailyRate();
+        int days = calculateChargeableDaysBetween(rental.getStartDate(), rental.getEndDate());
+        //Minsta möjliga ska vara 1
+        days = days == 0 ? 1 :days;
+        return days * rental.getDailyRate();
     }
 
     private double calculateRefund(LocalDateTime startDate, LocalDateTime returnDate, double currentPayment) {
         //om man returnerar (avbryter) 7 dagar innan startdatum blir allt återbetalat
-        if(returnDate.isBefore(startDate) && getDaysBetween(returnDate, startDate) >= 7){
+        if(returnDate.isBefore(startDate) && ChronoUnit.DAYS.between(returnDate, startDate) >= 7){
             return currentPayment;
         }
         //Om man har fler policys kan de läggas in här
@@ -105,8 +109,8 @@ public class RentalService {
             return 0;
         }
 
-        long extraDays = getDaysBetween(endDate, returnDate);
         double lateMultiplier = 1.2;
+        long extraDays = calculateChargeableDaysBetween(endDate, returnDate);
 
         return extraDays * dailyRate * lateMultiplier;
     }
@@ -136,15 +140,15 @@ public class RentalService {
         };
     }
 
+    public List<Rental> findFutureRentalsByRentalObjectId(RentalObject rentalObjectType, Long rentalObjectId){
+    if(rentalObjectId == null || rentalObjectId <= 0) throw new IllegalArgumentException("UthyrningsObjektID är inte godkänt.");
 
-        public List<Rental> findFutureRentalsByRentalObjectId(RentalObject rentalObjectType, Long rentalObjectId){
-        if(rentalObjectId == null || rentalObjectId <= 0) throw new IllegalArgumentException("UthyrningsObjektID är inte godkänt.");
-
-        return rentalRepo.findFutureRentalsByRentalObjectId(rentalObjectType, rentalObjectId);
+    return rentalRepo.findFutureRentalsByRentalObjectId(rentalObjectType, rentalObjectId);
     }
 
-    private long getDaysBetween(LocalDateTime startDate, LocalDateTime endDate) {
-        return ChronoUnit.DAYS.between(startDate, endDate);
+    private int calculateChargeableDaysBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        long days = ChronoUnit.DAYS.between(startDate, endDate);
+        return Math.toIntExact(days + (ChronoUnit.HOURS.between(startDate.plusDays(days), endDate) >= 1 ? 1 : 0));
     }
 
 }

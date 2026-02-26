@@ -17,16 +17,17 @@ public class DecorationService {
         this.decorationRepo = decorationRepo;
     }
 
-    public Decoration createDecoration(String name, String description, double rentalRate, Color color){
+    public Decoration createDecoration(String name, double rentalRate, Color color){
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Namn krävs");
         if (rentalRate < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
 
-        Decoration decoration = new Decoration(name.trim(), description, rentalRate, color);
+        Decoration decoration = new Decoration(name.trim(), rentalRate, color);
         decorationRepo.save(decoration);
         return decoration;
     }
 
     public Decoration update(Decoration decoration){
+        if (decoration.getId() == null) throw new IllegalArgumentException("Denna dekoration har inte tidigare sparats, skapa en ny");
         if (decoration.getName() == null || decoration.getName().isBlank()) throw new IllegalArgumentException("Namn krävs");
         if (decoration.getRentalRate() < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
 

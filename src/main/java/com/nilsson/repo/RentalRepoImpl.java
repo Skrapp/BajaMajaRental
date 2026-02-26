@@ -196,17 +196,17 @@ public class RentalRepoImpl implements RentalRepo{
     public List<Rental> findFutureRentalsByRentalObjectId(RentalObject rentalObjectType, long rentalObjectId) {
         try(Session session = sessionFactory.openSession()){
             String hql = """
-                    SELECT *
-                    FROM rentals 
-                    WHERE rental_object_id = :rentalObjectId
-                        AND rental_object_type = :rentalObjectType
-                        AND return_date IS NULL
-                        AND end_date > CURRENT_TIMESTAMP
+                    SELECT r
+                    FROM Rental r
+                    WHERE r.rentalObjectId = :rentalObjectId
+                        AND r.rentalObjectType = :rentalObjectType
+                        AND r.returnDate IS NULL
+                        AND r.endDate > CURRENT_TIMESTAMP
                     """;
 
             Query<Rental> query =  session.createQuery(hql, Rental.class)
                     .setParameter("rentalObjectId", rentalObjectId)
-                    .setParameter("rentalObjectType", rentalObjectType.name());
+                    .setParameter("rentalObjectType", rentalObjectType);
 
             return query.getResultList();
         }

@@ -14,9 +14,6 @@ public class Platform {
     @Column(name = "name", nullable = false, unique = true, length = 30)
     private String name;
 
-    @Column(name = "description", length = 250)
-    private String description;
-
     @Column(name = "rental_rate", nullable = false)
     private double rentalRate;
 
@@ -31,12 +28,6 @@ public class Platform {
     private final RentalObject type = RentalObject.PLATFORM;
 
     protected Platform() {
-    }
-
-    public Platform(String name, String description, double rentalRate) {
-        this.name = name;
-        this.description = description;
-        this.rentalRate = rentalRate;
     }
 
     public Platform(String name, double rentalRate) {
@@ -54,14 +45,6 @@ public class Platform {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public double getRentalRate() {
@@ -93,7 +76,6 @@ public class Platform {
         return type +"{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", rentalRate=" + rentalRate +
                 '}';
     }

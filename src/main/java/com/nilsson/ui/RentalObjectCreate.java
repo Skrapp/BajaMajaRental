@@ -67,8 +67,9 @@ public class RentalObjectCreate {
         String name = input.getInputNotEmpty("Namn");
         double rentalRate = input.getInputDouble("Kostnad per dag");
         int numberOfStalls = input.getInputInt("Antal toaletter");
+        boolean isHandicap = input.getInputYesOrNo("Är denna handikappanpassad");
 
-        BajaMaja bajaMaja = bajaMajaService.createBajaMaja(name, rentalRate, numberOfStalls);
+        BajaMaja bajaMaja = bajaMajaService.createBajaMaja(name, rentalRate, numberOfStalls, isHandicap);
 
         System.out.println("BajaMaja skapad: " + bajaMaja);
     }
@@ -81,7 +82,7 @@ public class RentalObjectCreate {
         String name = input.getInputNotEmpty("Namn");
         double rentalRate = input.getInputDouble("Kostnad per dag");
 
-        Platform platform = platformService.createPlatform(name, "", rentalRate);
+        Platform platform = platformService.createPlatform(name, rentalRate);
 
         System.out.println("Platform skapad." + platform);
 
@@ -144,7 +145,7 @@ public class RentalObjectCreate {
             }
         }
 
-        Decoration decoration = decorationService.createDecoration(name, "",rentalRate, color);
+        Decoration decoration = decorationService.createDecoration(name, rentalRate, color);
 
         System.out.println("Decoration skapad: " + decoration);
     }

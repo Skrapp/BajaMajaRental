@@ -13,6 +13,7 @@ import com.nilsson.service.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class RentalCreate {
     private InputMethod input;
@@ -119,7 +120,12 @@ public class RentalCreate {
         }
 
         System.out.println("Alla framtida uthyrningar:");
-        rentalService.findFutureRentalsByRentalObjectId(rentalObjectType, objectId).forEach(System.out::println);
+        List objects = rentalService.findFutureRentalsByRentalObjectId(rentalObjectType, objectId);
+        if(objects.isEmpty()){
+            System.out.println("Fanns inga framtida uthyrningar");
+        }else {
+            objects.forEach(System.out::println);
+        }
 
         boolean chooseDate = true;
         do{

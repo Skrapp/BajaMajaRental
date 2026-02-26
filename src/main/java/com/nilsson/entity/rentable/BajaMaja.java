@@ -14,9 +14,6 @@ public class BajaMaja {
     @Column(name = "name", nullable = false, length = 30)
     private String name;
 
-    @Column(name = "description", length = 250)
-    private String description;
-
     @Column(name = "rental_rate", nullable = false)
     private double rentalRate;
 
@@ -30,9 +27,8 @@ public class BajaMaja {
     @Column(name = "type", nullable = false, updatable = false)
     private RentalObject type = RentalObject.BAJAMAJA;
 
-    public BajaMaja(String name, String description, double rentalRate, int numberOfStalls, boolean handicap) {
+    public BajaMaja(String name, double rentalRate, int numberOfStalls, boolean handicap) {
         this.name = name;
-        this.description = description;
         this.rentalRate = rentalRate;
         this.numberOfStalls = numberOfStalls;
         this.handicap = handicap;
@@ -61,14 +57,6 @@ public class BajaMaja {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public double getRentalRate() {
@@ -108,7 +96,6 @@ public class BajaMaja {
         return type + "{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", rentalRate=" + rentalRate +
                 ", numberOfStalls=" + numberOfStalls +
                 ", handicap=" + handicap +

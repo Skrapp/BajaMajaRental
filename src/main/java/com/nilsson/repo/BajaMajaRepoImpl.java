@@ -82,8 +82,7 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
                 WHERE r.id IS NULL
                     AND b.rentalRate >= :minimumRate
                     AND b.rentalRate <= :maximumRate
-                    AND (b.name like :searchWord
-                       OR b.description like :searchWord)
+                    AND b.name like :searchWord
                     AND b.handicap
                 """;
 
@@ -121,8 +120,7 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
                 WHERE r.id IS NULL
                     AND b.rentalRate >= :minimumRate
                     AND b.rentalRate <= :maximumRate
-                    AND (b.name like :searchWord
-                       OR b.description like :searchWord)
+                    AND b.name like :searchWord
                 """;
 
             Query<BajaMaja> query = session.createQuery(hql, BajaMaja.class)
@@ -151,8 +149,7 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
                 FROM BajaMaja b
                 WHERE b.rentalRate >= :minimumRate
                     AND b.rentalRate <= :maximumRate
-                    AND (b.name like :searchWord
-                       OR b.description like :searchWord)
+                    AND b.name like :searchWord
                     AND b.handicap
                 """;
 
@@ -180,8 +177,7 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
                 FROM BajaMaja b
                 WHERE b.rentalRate >= :minimumRate
                     AND b.rentalRate <= :maximumRate
-                    AND (b.name like :searchWord
-                       OR b.description like :searchWord)
+                    AND b.name like :searchWord
                 """;
 
             Query<BajaMaja> query = session.createQuery(hql, BajaMaja.class)

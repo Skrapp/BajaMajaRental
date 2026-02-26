@@ -24,6 +24,7 @@ public class CustomerService {
     }
 
     public Customer update(Customer customer){
+        if (customer.getId() == null) throw new IllegalArgumentException("Denna kund har inte tidigare sparats, skapa ny");
         if (customer.getName() == null || customer.getName().isBlank()) throw new IllegalArgumentException("name krävs");
         if (customer.getEmail() == null || customer.getEmail().isBlank()) throw new IllegalArgumentException("email krävs");
 

@@ -78,8 +78,7 @@ public class PlatformRepoImpl implements PlatformRepo{
                     WHERE r.id IS NULL
                         AND p.rentalRate >= :minimumRate
                         AND p.rentalRate <= :maximumRate
-                        AND (p.name like :searchWord
-                            OR p.description like :searchWord)
+                        AND p.name like :searchWord
                         AND b.id = :bajaMajaId
                 """;
 
@@ -118,8 +117,7 @@ public class PlatformRepoImpl implements PlatformRepo{
                     WHERE r.id IS NULL
                         AND p.rentalRate >= :minimumRate
                         AND p.rentalRate <= :maximumRate
-                        AND (p.name like :searchWord
-                            OR p.description like :searchWord)
+                        AND p.name like :searchWord
                 """;
 
             Query<Platform> query = session.createQuery(hql, Platform.class)
@@ -150,8 +148,7 @@ public class PlatformRepoImpl implements PlatformRepo{
                     INNER JOIN p.bajamajas b
                     WHERE p.rentalRate >= :minimumRate
                         AND p.rentalRate <= :maximumRate
-                        AND (p.name like :searchWord
-                            OR p.description like :searchWord)
+                        AND p.name like :searchWord
                         AND b.id = :bajaMajaId
                 """;
 
@@ -180,8 +177,7 @@ public class PlatformRepoImpl implements PlatformRepo{
                     FROM Platform p
                     WHERE p.rentalRate >= :minimumRate
                         AND p.rentalRate <= :maximumRate
-                        AND (p.name like :searchWord
-                            OR p.description like :searchWord)
+                        AND p.name like :searchWord
                 """;
 
             Query<Platform> query = session.createQuery(hql, Platform.class)

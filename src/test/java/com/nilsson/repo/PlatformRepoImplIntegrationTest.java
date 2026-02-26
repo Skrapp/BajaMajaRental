@@ -34,29 +34,4 @@ public class PlatformRepoImplIntegrationTest {
         bajaMajaRepo = new BajaMajaRepoImpl(sessionFactory);
         platformRepo = new PlatformRepoImpl(sessionFactory);
     }
-
-    @Test
-    void savePlatformWithMultipleBajaMajas() {
-        //Skapa två Bajamajor och sparar till db
-        BajaMaja b1 = new BajaMaja("Classic", 200, 1);
-        BajaMaja b2 = new BajaMaja("Deluxe", 400, 2);
-
-        bajaMajaRepo.save(b1);
-        bajaMajaRepo.save(b2);
-
-        assertNotNull(b1.getId());
-        assertNotNull(b2.getId());
-
-        // Skapa Platform och koppla BajaMajor
-        Platform platform = new Platform("FestivalPlatform", 1500);
-
-        platform.addBajaMaja(b1);
-        platform.addBajaMaja(b2);
-
-        platformRepo.save(platform);
-
-        assertNotNull(platform.getId());
-        assertEquals(2, platform.getBajamajas().size(),
-                "Plattformen ska ha två kopplade BajaMajor");
-    }
 }

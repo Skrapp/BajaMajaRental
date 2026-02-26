@@ -80,8 +80,7 @@ public class DecorationRepoImpl implements DecorationRepo{
                 WHERE r.id IS NULL
                     AND d.rentalRate >= :minimumRate
                     AND d.rentalRate <= :maximumRate
-                    AND (d.name LIKE :searchWord
-                        OR d.description LIKE :searchWord)
+                    AND d.name like :searchWord
                     AND d.color IN :colors
                 """;
 
@@ -112,8 +111,7 @@ public class DecorationRepoImpl implements DecorationRepo{
                 FROM Decoration d
                 WHERE d.rentalRate >= :minimumRate
                   AND d.rentalRate <= :maximumRate
-                  AND (d.name LIKE :searchWord
-                       OR d.description LIKE :searchWord)
+                  AND d.name LIKE :searchWord
                   AND d.color IN :colors
             """;
 

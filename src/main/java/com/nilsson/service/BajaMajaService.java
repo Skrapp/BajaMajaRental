@@ -16,7 +16,7 @@ public class BajaMajaService {
         this.bajaMajaRepo = bajaMajaRepo;
     }
 
-    public BajaMaja createBajaMaja(String name, double rentalRate, int numberOfStalls){
+    public BajaMaja createBajaMaja(String name, double rentalRate, int numberOfStalls, boolean isHandicap){
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Namn krävs");
         if (rentalRate < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
         if(numberOfStalls < 0) throw new IllegalArgumentException("Antal  måste vara 0 eller mer");
@@ -27,9 +27,10 @@ public class BajaMajaService {
     }
 
     public BajaMaja update(BajaMaja bajaMaja){
+        if (bajaMaja.getId() == null) throw new IllegalArgumentException("Denna BajaMaja har inte tidigare sparats, skapa en ny");
         if (bajaMaja.getName() == null || bajaMaja.getName().isBlank()) throw new IllegalArgumentException("Namn krävs");
         if (bajaMaja.getRentalRate() < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
-        if(bajaMaja.getNumberOfStalls() < 0) throw new IllegalArgumentException("Antal  måste vara 0 eller mer");
+        if (bajaMaja.getNumberOfStalls() < 0) throw new IllegalArgumentException("Antal  måste vara 0 eller mer");
 
         bajaMajaRepo.save(bajaMaja);
         return bajaMaja;

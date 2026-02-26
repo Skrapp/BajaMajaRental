@@ -31,7 +31,7 @@ class BajaMajaServiceTest {
         double rentalRate = 300;
         int numOfStalls = 2;
 
-        BajaMaja bajaMaja = bajaMajaService.createBajaMaja(name, rentalRate, numOfStalls);
+        BajaMaja bajaMaja = bajaMajaService.createBajaMaja(name, rentalRate, numOfStalls, true);
 
         assertNotNull(bajaMaja);
         assertEquals(name, bajaMaja.getName());
@@ -60,8 +60,8 @@ class BajaMajaServiceTest {
 
     @Test
     void createBajaMaja_ThrowsExceptionIfNameIsInvalid(){
-        assertThrows(IllegalArgumentException.class, () -> bajaMajaService.createBajaMaja(null, 100, 1));
-        assertThrows(IllegalArgumentException.class, () -> bajaMajaService.createBajaMaja("  ", 100, 1));
+        assertThrows(IllegalArgumentException.class, () -> bajaMajaService.createBajaMaja(null, 100, 1, true));
+        assertThrows(IllegalArgumentException.class, () -> bajaMajaService.createBajaMaja("  ", 100, 1, false));
         verify(bajaMajaRepo, never()).save(any());
     }
 
@@ -103,6 +103,38 @@ class BajaMajaServiceTest {
         //Se till så att findAll kördes och inte findAllByFiltered
         verify(bajaMajaRepo).findAll();
         verify(bajaMajaRepo, never()).findFiltered(anyString(), anyDouble(), anyDouble());
+    }
+
+    @Test
+    void findAllFiltered_usesFindFilteredAvailableByDateAndHandicap() {
+        BajaMaja b1 = new BajaMaja("Classic", 100, 1);
+        BajaMaja b2 = new BajaMaja("Deluxe", 200, 2);
+        b1.setHandicap(true);
+        b2.setHandicap(true);
+        List<BajaMaja> bajaMajaList = new ArrayList<>();
+        bajaMajaList.add(b1);
+        bajaMajaList.add(b2);
+        LocalDateTime availableDate = LocalDateTime.now();
+
+        when(bajaMajaRepo
+                .findFilteredAvailableByDateAndHandicap( availableDate,"", 0, 1000000))
+                .thenReturn(bajaMajaList);
+
+        List<BajaMaja> bajaMajaFilterList = bajaMajaService
+                .findFiltered(" ", true, availableDate, 0, 0, true);
+
+        assertNotNull(bajaMajaFilterList);
+        assertEquals(bajaMajaList, bajaMajaFilterList);
+
+        verify(bajaMajaRepo).findFilteredAvailableByDateAndHandicap(availableDate,"", 0, 1000000);
+    }
+
+    @Test
+    void findAllFiltered_invalidInput_ShouldThrowAndNotReachRepo(){
+        assertThrows(IllegalArgumentException.class,
+                () -> bajaMajaService
+                        .findFiltered(" ", true, LocalDateTime.now(), 1000, 100, true));
+        verifyNoInteractions(bajaMajaRepo);
     }
 
     private static void setIdViaReflection(Object entity, Long id) {

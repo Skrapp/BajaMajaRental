@@ -133,13 +133,13 @@ public class InputMethod {
 
     public LocalDateTime getInputDate() throws IOException {
         while (true) {
-            System.out.println("Skriv datum i formatet yyyy-mm-dd (skriv 0 för att hyra från idag)");
+            System.out.println("Skriv datum i formatet yyyy-mm-dd:hh (skriv 0 för att hyra från idag)");
             String input = reader.readLine().trim();
             if(input.equals("0")){
                 return LocalDateTime.now();
             }
             try {
-                return LocalDateTime.parse(input + "T00:00:00");
+                return LocalDateTime.parse(input.replace(':', 'T') + ":00:00");
             } catch (Exception e) {
                 System.out.println("Fel format på datumet, försök igen");
             }

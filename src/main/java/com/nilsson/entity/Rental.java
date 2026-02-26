@@ -2,7 +2,6 @@ package com.nilsson.entity;
 
 import com.nilsson.entity.rentable.RentalObject;
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 
@@ -33,12 +32,17 @@ public class Rental {
     @Column(name = "return_date")
     private LocalDateTime returnDate;
 
-    //TODO använd dailyRate istället
     @Column(name = "dailyRate", nullable = false)
     private Double dailyRate;
 
-    @Column(name = "finalPayment")
-    private Double finalPayment;
+    @Column(name = "originalPayment")
+    private Double originalPayment;
+
+    @Column(name = "extraPayment")
+    private Double extraPayment;
+
+    @Column(name = "refund")
+    private Double refund;
 
     protected Rental() {
     }
@@ -116,12 +120,28 @@ public class Rental {
         this.dailyRate = dailyRate;
     }
 
-    public Double getFinalPayment() {
-        return finalPayment;
+    public Double getOriginalPayment() {
+        return originalPayment;
     }
 
-    public void setFinalPayment(Double finalPayment) {
-        this.finalPayment = finalPayment;
+    public void setOriginalPayment(Double originalPayment) {
+        this.originalPayment = originalPayment;
+    }
+
+    public Double getExtraPayment() {
+        return extraPayment;
+    }
+
+    public void setExtraPayment(Double extraPayment) {
+        this.extraPayment = extraPayment;
+    }
+
+    public Double getRefund() {
+        return refund;
+    }
+
+    public void setRefund(Double refund) {
+        this.refund = refund;
     }
 
     @Override
@@ -134,6 +154,7 @@ public class Rental {
                 ", endDate=" + endDate +
                 ", returnDate=" + returnDate +
                 ", dailyRate=" + dailyRate +
+                ", payed=" + (originalPayment + (extraPayment == null ? 0:extraPayment) - (refund == null ? 0:refund)) +
                 '}';
     }
 }
