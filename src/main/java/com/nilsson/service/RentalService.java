@@ -111,16 +111,36 @@ public class RentalService {
         return extraDays * dailyRate * lateMultiplier;
     }
 
-    public List<Rental> findAllByCustomerId(Long customerId){
-        if(customerId == null || customerId <= 0) throw new IllegalArgumentException("KundID är inte godkänt.");
-
-        return rentalRepo.findAllByCustomerId(customerId);
+    public enum RentalStatus{
+        ALL,
+        ACTIVE,
+        FUTURE,
+        LATE,
+        RETURNED,
+        NOT_RETURNED,
+        CANCELED
     }
 
-    public List<Rental> findAllByRentalObjectId(RentalObject rentalObjectType, Long rentalObjectId, boolean fromToday){
+    public List<Rental> findRentalsByCustomerId(Long customerId, RentalStatus rentalStatus){
+        if(customerId == null || customerId <= 0) throw new IllegalArgumentException("KundID är inte godkänt.");
+        if (rentalStatus == null) rentalStatus = RentalStatus.ALL;
+
+        return switch (rentalStatus){
+            case ALL -> rentalRepo.findAllRentalsByCustomerId(customerId);
+            case ACTIVE -> rentalRepo.findActiveRentalsByCustomerId(customerId);
+            case FUTURE -> rentalRepo.findFutureRentalsByCustomerId(customerId);
+            case LATE -> rentalRepo.findLateRentalsByCustomerId(customerId);
+            case RETURNED -> rentalRepo.findReturnedRentalsByCustomerId(customerId);
+            case NOT_RETURNED -> rentalRepo.findNotReturnedRentalsByCustomerId(customerId);
+            case CANCELED -> rentalRepo.findCanceledRentalsByCustomerId(customerId);
+        };
+    }
+
+
+        public List<Rental> findFutureRentalsByRentalObjectId(RentalObject rentalObjectType, Long rentalObjectId){
         if(rentalObjectId == null || rentalObjectId <= 0) throw new IllegalArgumentException("UthyrningsObjektID är inte godkänt.");
 
-        return rentalRepo.findAllByRentalObjectId(rentalObjectType, rentalObjectId, fromToday);
+        return rentalRepo.findFutureRentalsByRentalObjectId(rentalObjectType, rentalObjectId);
     }
 
     private long getDaysBetween(LocalDateTime startDate, LocalDateTime endDate) {

@@ -1,10 +1,10 @@
 package com.nilsson.repo;
 
-import com.nilsson.entity.Customer;
 import com.nilsson.entity.Rental;
 import com.nilsson.entity.rentable.RentalObject;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,24 +31,7 @@ public class RentalRepoImpl implements RentalRepo{
     }
 
     @Override
-    public List<Rental> findAllByCustomerId(Long customerId) {
-        try(Session session = sessionFactory.openSession()){
-            String sql = """
-                    SELECT *
-                    FROM rentals 
-                    WHERE customer_id = :customerId
-                    """;
-
-            List<Rental> result =  session.createNativeQuery(sql, Rental.class)
-                    .setParameter("customerId", customerId)
-                    .getResultList();
-
-            return result;
-        }
-    }
-
-    @Override
-    public Optional<Rental> findById(Long id) {
+    public Optional<Rental> findById(long id) {
         try(Session session = sessionFactory.openSession()){
             return Optional.ofNullable(session.get(Rental.class, id));
         }
@@ -56,7 +39,6 @@ public class RentalRepoImpl implements RentalRepo{
 
     /**
      * Ser om uthyrningobjektet är redan uthyrt under den period som efterfrågas.
-     * TODO istället för att bara se på id göra en funktion för att se ifall den typen (namnet) finns tillgänglig för att kunna ha flera av samma modell
      * @param rentalObjectType
      * @param rentalObjectId
      * @param startDate
@@ -88,25 +70,145 @@ public class RentalRepoImpl implements RentalRepo{
     }
 
     @Override
-    public List<Rental> findAllByRentalObjectId(RentalObject rentalObjectType, Long rentalObjectId, boolean fromToday) {
+    public List<Rental> findAllRentalsByCustomerId(long customerId) {
         try(Session session = sessionFactory.openSession()){
             String sql = """
-                    SELECT *
-                    FROM rentals 
-                    WHERE rental_object_id = :rentalObjectId
-                    AND rental_object_type = :rentalObjectType
-                    AND return_date IS NULL
+                    SELECT r
+                    FROM Rental r
+                    WHERE r.customer.id = :customerId
                     """;
 
-            if(fromToday){
-                sql = sql + "AND end_date > CURRENT_TIMESTAMP";
-            }
-            List<Rental> result =  session.createNativeQuery(sql, Rental.class)
-                    .setParameter("rentalObjectId", rentalObjectId)
-                    .setParameter("rentalObjectType", rentalObjectType.name())
+            List<Rental> result =  session.createQuery(sql, Rental.class)
+                    .setParameter("customerId", customerId)
                     .getResultList();
 
             return result;
+        }
+    }
+
+    @Override
+    public List<Rental> findActiveRentalsByCustomerId(long customerId) {
+        try(Session session = sessionFactory.openSession()) {
+            String hql = """
+                    SELECT r
+                    FROM Rental r
+                    WHERE r.customer.id = :customerId
+                        AND r.startDate < CURRENT_TIMESTAMP
+                        AND r.returnDate IS NULL
+                    """;
+
+            Query<Rental> query = session.createQuery(hql, Rental.class)
+                    .setParameter("customerId", customerId);
+
+            return query.getResultList();
+        }
+    }
+
+    @Override
+    public List<Rental> findFutureRentalsByCustomerId(long customerId) {
+        try(Session session = sessionFactory.openSession()) {
+            String hql = """
+                    SELECT r
+                    FROM Rental r
+                    WHERE r.customer.id = :customerId
+                        AND r.endDate > CURRENT_TIMESTAMP
+                        AND r.returnDate IS NULL
+                    """;
+
+            Query<Rental> query = session.createQuery(hql, Rental.class)
+                    .setParameter("customerId", customerId);
+
+            return query.getResultList();
+        }
+    }
+
+    @Override
+    public List<Rental> findLateRentalsByCustomerId(long customerId) {
+        try(Session session = sessionFactory.openSession()) {
+            String hql = """
+                    SELECT r
+                    FROM Rental r
+                    WHERE r.customer.id = :customerId
+                        AND r.endDate < CURRENT_TIMESTAMP
+                        AND r.returnDate IS NULL
+                    """;
+
+            Query<Rental> query = session.createQuery(hql, Rental.class)
+                    .setParameter("customerId", customerId);
+
+            return query.getResultList();
+        }
+    }
+
+    @Override
+    public List<Rental> findReturnedRentalsByCustomerId(long customerId) {
+        try(Session session = sessionFactory.openSession()) {
+            String hql = """
+                    SELECT r
+                    FROM Rental r
+                    WHERE r.customer.id = :customerId
+                        AND r.returnDate IS NOT NULL
+                    """;
+
+            Query<Rental> query = session.createQuery(hql, Rental.class)
+                    .setParameter("customerId", customerId);
+
+            return query.getResultList();
+        }
+    }
+
+    @Override
+    public List<Rental> findCanceledRentalsByCustomerId(long customerId) {
+        try(Session session = sessionFactory.openSession()) {
+            String hql = """
+                    SELECT r
+                    FROM Rental r
+                    WHERE r.customer.id = :customerId
+                        AND r.returnDate IS NOT NULL
+                        AND r.returnDate < r.startDate
+                    """;
+
+            Query<Rental> query = session.createQuery(hql, Rental.class)
+                    .setParameter("customerId", customerId);
+
+            return query.getResultList();
+        }
+    }
+
+    @Override
+    public List<Rental> findNotReturnedRentalsByCustomerId(long customerId) {
+        try(Session session = sessionFactory.openSession()) {
+            String hql = """
+                    SELECT r
+                    FROM Rental r
+                    WHERE r.customer.id = :customerId
+                        AND r.returnDate IS NULL
+                    """;
+
+            Query<Rental> query = session.createQuery(hql, Rental.class)
+                    .setParameter("customerId", customerId);
+
+            return query.getResultList();
+        }
+    }
+
+    @Override
+    public List<Rental> findFutureRentalsByRentalObjectId(RentalObject rentalObjectType, long rentalObjectId) {
+        try(Session session = sessionFactory.openSession()){
+            String hql = """
+                    SELECT *
+                    FROM rentals 
+                    WHERE rental_object_id = :rentalObjectId
+                        AND rental_object_type = :rentalObjectType
+                        AND return_date IS NULL
+                        AND end_date > CURRENT_TIMESTAMP
+                    """;
+
+            Query<Rental> query =  session.createQuery(hql, Rental.class)
+                    .setParameter("rentalObjectId", rentalObjectId)
+                    .setParameter("rentalObjectType", rentalObjectType.name());
+
+            return query.getResultList();
         }
     }
 }

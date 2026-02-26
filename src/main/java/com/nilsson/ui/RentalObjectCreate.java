@@ -1,8 +1,6 @@
 package com.nilsson.ui;
 
-import com.nilsson.entity.rentable.Color;
-import com.nilsson.entity.rentable.Platform;
-import com.nilsson.entity.rentable.RentalObject;
+import com.nilsson.entity.rentable.*;
 import com.nilsson.service.BajaMajaService;
 import com.nilsson.service.PlatformService;
 import com.nilsson.service.DecorationService;
@@ -62,28 +60,30 @@ public class RentalObjectCreate {
     }
 
     private void createBajaMaja() throws IOException {
-
+        System.out.println("-------------");
         System.out.println("Skapa BajaMaja");
+        System.out.println("-------------");
 
-        String name = input.getInputNotEmpty("Namn:");
-        double rentalRate = input.getInputDouble("Kostnad per dag:");
-        int numberOfStalls = input.getInputInt("Antal toaletter:");
+        String name = input.getInputNotEmpty("Namn");
+        double rentalRate = input.getInputDouble("Kostnad per dag");
+        int numberOfStalls = input.getInputInt("Antal toaletter");
 
-        bajaMajaService.createBajaMaja(name, rentalRate, numberOfStalls);
+        BajaMaja bajaMaja = bajaMajaService.createBajaMaja(name, rentalRate, numberOfStalls);
 
-        System.out.println("BajaMaja skapad.");
+        System.out.println("BajaMaja skapad: " + bajaMaja);
     }
 
     private void createPlatform() throws IOException {
-
+        System.out.println("-------------");
         System.out.println("Skapa Platform");
+        System.out.println("-------------");
 
-        String name = input.getInputNotEmpty("Namn:");
-        double rentalRate = input.getInputDouble("Kostnad per dag:");
+        String name = input.getInputNotEmpty("Namn");
+        double rentalRate = input.getInputDouble("Kostnad per dag");
 
         Platform platform = platformService.createPlatform(name, "", rentalRate);
 
-        System.out.println("Platform skapad.");
+        System.out.println("Platform skapad." + platform);
 
         // Lägg till BajaMajor
         while (true) {
@@ -94,9 +94,13 @@ public class RentalObjectCreate {
                 För att avsluta skriv 0.
                 """);
 
-            String choice = input.getInputNotEmpty("Val:");
+            String choice = input.getInputNotEmpty("Val");
 
-            if (choice.equals("0")) break;
+            if (choice.equals("0")) {
+                System.out.println("Tillagda BajaMajor:");
+                platform.getBajamajas().forEach(System.out::println);
+                break;
+            }
 
             try {
                 long bajaMajaId = Long.parseLong(choice);
@@ -110,22 +114,24 @@ public class RentalObjectCreate {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
+
         }
     }
 
     private void createDecoration() throws IOException {
-
+        System.out.println("-------------");
         System.out.println("Skapa Decoration");
+        System.out.println("-------------");
 
-        String name = input.getInputNotEmpty("Namn:");
-        double rentalRate = input.getInputDouble("Kostnad per dag:");
+        String name = input.getInputNotEmpty("Namn");
+        double rentalRate = input.getInputDouble("Kostnad per dag");
 
         Color color;
 
         while (true) {
             try {
                 String colorInput = input
-                        .getInputNotEmpty("Färg (ex: RED):")
+                        .getInputNotEmpty("Huvudfärg (ex: RED)")
                         .toUpperCase();
 
                 color = Color.valueOf(colorInput);
@@ -138,8 +144,8 @@ public class RentalObjectCreate {
             }
         }
 
-        decorationService.createDecoration(name, "",rentalRate, color);
+        Decoration decoration = decorationService.createDecoration(name, "",rentalRate, color);
 
-        System.out.println("Decoration skapad.");
+        System.out.println("Decoration skapad: " + decoration);
     }
 }

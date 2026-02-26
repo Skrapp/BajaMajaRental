@@ -2,7 +2,6 @@ package com.nilsson.ui;
 
 import com.nilsson.entity.Customer;
 import com.nilsson.exception.CustomerNotFoundException;
-import com.nilsson.exception.RentalObjectNotFoundException;
 import com.nilsson.service.CustomerService;
 import com.nilsson.service.RentalService;
 
@@ -102,7 +101,7 @@ public class CustomerList {
                     for (Customer customer : customers) {
                         System.out.println(customer);
                         System.out.println("Alla uthyrningar:");
-                        rentalService.findAllByCustomerId(customer.getId()).forEach(System.out::println);
+                        rentalService.findRentalsByCustomerId(customer.getId(), RentalService.RentalStatus.ALL).forEach(System.out::println);
                         System.out.println();
                     }
                 }
@@ -110,8 +109,7 @@ public class CustomerList {
                     for (Customer customer : customers) {
                         System.out.println(customer);
                         System.out.println("Aktiva uthyrningar:");
-                        //TODO ändra till aktiva uthyrningar
-                        rentalService.findAllByCustomerId(customer.getId()).forEach(System.out::println);
+                        rentalService.findRentalsByCustomerId(customer.getId(), RentalService.RentalStatus.ACTIVE).forEach(System.out::println);
                         System.out.println();
                     }
                 }
@@ -119,8 +117,7 @@ public class CustomerList {
                     for (Customer customer : customers) {
                         System.out.println(customer);
                         System.out.println("Försenade uthyrningar:");
-                        //TODO ändra till försenade uthyrningar
-                        rentalService.findAllByCustomerId(customer.getId()).forEach(System.out::println);
+                        rentalService.findRentalsByCustomerId(customer.getId(), RentalService.RentalStatus.LATE).forEach(System.out::println);
                         System.out.println();
                     }
                 }

@@ -128,7 +128,6 @@ public class Rental {
     public String toString() {
         return "Rental{" +
                 "id=" + id +
-                ", customer=" + customer +
                 ", rentalObjectType=" + rentalObjectType +
                 ", rentalObjectId=" + rentalObjectId +
                 ", startDate=" + startDate +

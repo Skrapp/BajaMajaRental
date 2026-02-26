@@ -42,25 +42,26 @@ public class RentalReturn {
             }
         }
 
-        List<Rental> rentals = rentalService.findAllByCustomerId(customerId);
-        if(rentals.isEmpty()){
-            System.out.println("Kunden har inga uthyrningar.");
+        List<Rental> notReturnedRentals = rentalService.findRentalsByCustomerId(customerId, RentalService.RentalStatus.NOT_RETURNED);
+        if(notReturnedRentals.isEmpty()){
+            System.out.println("Kunden har inga uthyrningar som ej är återlämnade.");
             return UIState.MAIN_MENU;
         }
         
-        System.out.println("Visar alla rentals av kund: " + customer);
-        rentals.forEach(System.out::println);
+        System.out.println("Visar alla ej återlämnade rentals av kund: " + customer);
+        notReturnedRentals.forEach(System.out::println);
 
-        Long rentalId;
+        Long rentalIdChoice;
         while (true){
-            rentalId = input.getInputLong("Välj rental-ID (skriv 0 för att avbryta).");
-            if (rentalId == 0L) {
+            rentalIdChoice = input.getInputLong("Välj rental-ID (skriv 0 för att avbryta).");
+            if (rentalIdChoice == 0L) {
                 System.out.println("Avbryt tillbakalämning.");
                 return UIState.MAIN_MENU;
             }
-            Long finalRentalId = rentalId;
-            boolean found = rentals.stream().anyMatch(rental -> rental.getId().equals(finalRentalId));
-            if (found) {
+            Long rentalId = rentalIdChoice;
+            //Se ifall Rental finns i kundens egna lista av uthyrningar, ska inte kunna lämna tillbaka någon annans uthyrning
+            boolean foundAmongCustomersRentals = notReturnedRentals.stream().anyMatch(rental -> rental.getId().equals(rentalId));
+            if (foundAmongCustomersRentals) {
                 break;
             } else {
                 System.out.println("ID finns inte");
@@ -68,9 +69,9 @@ public class RentalReturn {
         }
 
         try {
-            Rental rental = rentalService.returnRental(rentalId, LocalDateTime.now());
+            Rental rental = rentalService.returnRental(rentalIdChoice, LocalDateTime.now());
 
-            System.out.println("Tillbakalämnad");
+            System.out.println("Tillbakalämnad:");
             System.out.println(rental);
             return UIState.MAIN_MENU;
         } catch (RentalAlreadyReturnedException e) {

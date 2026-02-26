@@ -59,24 +59,24 @@ public class RentalCreate {
 
         System.out.println("Vald kund: " + customer.getId() + " : " + customer.getName());
 
-        //Välj typ av rentalObject
+        //Välj typ av rentalObjectType
         System.out.println("Kategorier:");
         for (RentalObject type : RentalObject.values()) {
             System.out.println(type);
         }
 
-        RentalObject rentalObject;
+        RentalObject rentalObjectType;
         while (true) {
             String rentalCategory = input.getInputNotEmpty("Välj kategori, skriv hela namnet").toUpperCase();
             try {
-                rentalObject = RentalObject.valueOf(rentalCategory);
+                rentalObjectType = RentalObject.valueOf(rentalCategory);
                 break;
             } catch (IllegalArgumentException e) {
                 System.out.println("Ogiltig kategori. Försök igen.");
             }
         }
 
-        switch (rentalObject) {
+        switch (rentalObjectType) {
             case BAJAMAJA -> bajaMajaService.findAll().forEach(System.out::println);
             case PLATFORM -> platformService.findAll().forEach(System.out::println);
             case DECORATION -> decorationService.findAll().forEach(System.out::println);
@@ -93,7 +93,7 @@ public class RentalCreate {
                     return UIState.MAIN_MENU;
                 }
 
-                switch (rentalObject) {
+                switch (rentalObjectType) {
                     case BAJAMAJA -> {
                         BajaMaja bajaMaja = bajaMajaService.findById(objectId);
                         System.out.println("Valt objekt: " + bajaMaja.getType() + " " + bajaMaja.getId() + " : " + bajaMaja.getName());
@@ -118,18 +118,18 @@ public class RentalCreate {
             }
         }
 
-        System.out.println("Alla framtida uthyrningar");
-        rentalService.findAllByRentalObjectId(rentalObject, objectId, true).forEach(System.out::println);
+        System.out.println("Alla framtida uthyrningar:");
+        rentalService.findFutureRentalsByRentalObjectId(rentalObjectType, objectId).forEach(System.out::println);
 
         boolean chooseDate = true;
         do{
             //Välj datum
             System.out.println("Välj startdatum.");
-            LocalDateTime startDate = input.getInputDate().withHour(9);
+            LocalDateTime startDate = input.getInputDate();
             System.out.println("Startdatum: " + startDate);
 
             System.out.println("Välj slutdatum.");
-            LocalDateTime endDate = input.getInputDate().withHour(16);
+            LocalDateTime endDate = input.getInputDate();
             System.out.println("Slutdatum: " + endDate);
 
             //Skapa Rental
@@ -138,7 +138,7 @@ public class RentalCreate {
 
                 Rental rental = rentalService.createRental(
                         customer,
-                        rentalObject,
+                        rentalObjectType,
                         objectId,
                         startDate,
                         endDate,
@@ -149,7 +149,8 @@ public class RentalCreate {
                 chooseDate = false;
             } catch (RentalObjectNotAvailableException e) {
                 System.out.println("Rental kunde inte skapas: " + e.getMessage());
-                input.getInputYesOrNo("Välj annat datum");
+                if(!input.getInputYesOrNo("Välj annat datum"))
+                    chooseDate = false;
             }
         }while (chooseDate);
         return UIState.MAIN_MENU;
