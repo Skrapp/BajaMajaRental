@@ -6,9 +6,7 @@ import com.nilsson.entity.rentable.RentalObject;
 import com.nilsson.exception.RentalObjectNotFoundException;
 import com.nilsson.repo.DecorationRepo;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,12 +67,12 @@ public class DecorationService {
         }
 
         //1 000 000 känns som ett tillräckligt högt tak
-        if(maximumRate <= 0) maximumRate = 100000.0;
+        if(maximumRate <= 0) maximumRate = 1000000.0;
 
         if(requireAvailableByDate){
             return decorationRepo.findFilteredAvailableByDate(availableDate,searchWord,minimumRate,maximumRate,colors);
         }
 
-        return decorationRepo.findFilteredDecorations(searchWord,minimumRate, maximumRate, colors);
+        return decorationRepo.findFiltered(searchWord,minimumRate, maximumRate, colors);
     }
 }

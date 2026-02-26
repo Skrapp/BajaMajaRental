@@ -5,6 +5,7 @@ import com.nilsson.entity.rentable.RentalObject;
 import com.nilsson.exception.RentalObjectNotFoundException;
 import com.nilsson.repo.BajaMajaRepo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,19 +50,35 @@ public class BajaMajaService {
     /**
      *Filtrerar enligt parametrar.
      * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
-     * @param requireAvailableToday Sätt true om det endast ska lista artiklar som inte är bokade idag
+     * @param requireAvailableByDate Sätt true om det endast ska lista artiklar som inte är bokade ett specifikt datum
+     * @param availableDate Datum för att se om artikel är tillgänglig, endast aktuell när requireAvailableByDate är true
      * @param minimumRate Minsta kostnaden av artikel. Sätt 0 för att inte filtrera enligt minsta
      * @param maximumRate Största kostnaden för en artikel. Sätt 0 för att inte filtrera enligt största
      * @param requireHandicap Sätt true för att endast inkludera handikappanpassade bajamajor
      * @return returnerar en lista av BajaMajas enligt filtreringen
      */
-    public List<BajaMaja> findAllFiltered(String searchWord, boolean requireAvailableToday, double minimumRate, double maximumRate, boolean requireHandicap) {
-        if(searchWord == null) throw new IllegalArgumentException("Sökordet får inte vara null");
+    public List<BajaMaja> findFiltered(String searchWord, boolean requireAvailableByDate, LocalDateTime availableDate,
+                                       double minimumRate, double maximumRate, boolean requireHandicap) {
         if(minimumRate > maximumRate && maximumRate != 0) throw new IllegalArgumentException("Minimumpriset får ej vara lägre än maximumpriset");
+        if(requireAvailableByDate && availableDate == null) throw new IllegalArgumentException("Datum får inte vara null om man ska söka efter datum");
+
+        if(searchWord == null || searchWord.isBlank()) searchWord = "";
 
         //Om man inte söker efter nåt speciellt så vill man ha allt
-        if(searchWord.isBlank() && !requireAvailableToday && minimumRate <= 0 && maximumRate <= 0 && !requireHandicap)return findAll();
+        if(searchWord.isBlank() && !requireAvailableByDate && minimumRate <= 0 && maximumRate <= 0 && !requireHandicap)
+            return findAll();
 
-        return bajaMajaRepo.findAllFiltered(searchWord, requireAvailableToday,minimumRate, maximumRate, requireHandicap);
+        //1 000 000 känns som ett tillräckligt högt tak
+        if(maximumRate <= 0) maximumRate = 1000000.0;
+
+        if(requireAvailableByDate){
+            if(requireHandicap)
+                return bajaMajaRepo.findFilteredAvailableByDateAndHandicap(availableDate, searchWord, minimumRate, maximumRate);
+            return bajaMajaRepo.findFilteredAvailableByDate(availableDate, searchWord, minimumRate, maximumRate);
+        }
+        if(requireHandicap)
+            return bajaMajaRepo.findFilteredHandicap(searchWord, minimumRate, maximumRate);
+
+        return bajaMajaRepo.findFiltered(searchWord,minimumRate, maximumRate);
     }
 }

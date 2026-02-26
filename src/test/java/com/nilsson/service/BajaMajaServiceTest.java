@@ -2,10 +2,10 @@ package com.nilsson.service;
 
 import com.nilsson.entity.rentable.BajaMaja;
 import com.nilsson.repo.BajaMajaRepo;
-import com.nilsson.repo.RentalRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,14 +95,14 @@ class BajaMajaServiceTest {
                 .thenReturn(bajaMajaList);
 
         List<BajaMaja> bajaMajaFilterList = bajaMajaService
-                .findAllFiltered(" ", false, 0, 0, false);
+                .findFiltered(" ", false, LocalDateTime.now(), 0, 0, false);
 
         assertNotNull(bajaMajaFilterList);
         assertEquals(bajaMajaList, bajaMajaFilterList);
 
         //Se till så att findAll kördes och inte findAllByFiltered
         verify(bajaMajaRepo).findAll();
-        verify(bajaMajaRepo, never()).findAllFiltered(anyString(), anyBoolean(), anyDouble(), anyDouble(), anyBoolean());
+        verify(bajaMajaRepo, never()).findFiltered(anyString(), anyDouble(), anyDouble());
     }
 
     private static void setIdViaReflection(Object entity, Long id) {

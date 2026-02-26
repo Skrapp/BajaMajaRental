@@ -5,7 +5,6 @@ import com.nilsson.exception.RentalObjectNotFoundException;
 import com.nilsson.service.*;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,9 +112,10 @@ public class RentalObjectsList {
             boolean requireHandicap = inputChoice.contains("handikapp");
             boolean availableToday = inputChoice.contains("idag");
 
-            List<BajaMaja> bajaMajas = bajaMajaService.findAllFiltered(
+            List<BajaMaja> bajaMajas = bajaMajaService.findFiltered(
                     search,
                     availableToday,
+                    LocalDateTime.now(),
                     min,
                     max,
                     requireHandicap
