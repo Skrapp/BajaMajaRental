@@ -45,12 +45,52 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public List<Customer> findAllFiltered(String searchWord, boolean requireRentals){
-        if(searchWord == null)throw new IllegalArgumentException("Sökordet får inte vara null. Om inget speciellt söks efter använd \"\"");
+    public enum SortOrder {
+        NAME_ASC,
+        NAME_DESC,
+        DEFAULT
+    }
+
+    public enum RequireRental{
+        ANY_RENTAL,
+        ACTIVE_RENTAL,
+        LATE_RENTAL,
+        NOT_REQUIRED
+    }
+
+    public List<Customer> findAllFiltered(String searchWord, RequireRental requireRental, SortOrder orderBy){
+        if(searchWord == null || searchWord.isBlank()) searchWord = "";
+        if(orderBy == null) orderBy = SortOrder.DEFAULT;
+        if(requireRental == null) requireRental = RequireRental.NOT_REQUIRED;
 
         //Om man inte söker efter nåt speciellt så vill man ha allt
-        if(searchWord.isBlank() && !requireRentals) return findAll();
+        final boolean noFiltersApplied =
+                searchWord.isBlank() && requireRental == RequireRental.NOT_REQUIRED && orderBy == SortOrder.DEFAULT;
+        if (noFiltersApplied) {
+            return findAll();
+        }
 
-        return customerRepository.findAllFiltered(searchWord, requireRentals);
+        //Skickar vidare beroende på RequireRental typ och SortOrder typ
+        return switch (requireRental) {
+            case ANY_RENTAL -> switch (orderBy) {
+                    case NAME_DESC -> customerRepository.findFilteredWithAnyRentalsSortByNameDesc(searchWord);
+                    default -> customerRepository.findFilteredWithAnyRentalsSortByNameAsc(searchWord);
+            };
+
+            case ACTIVE_RENTAL -> switch (orderBy) {
+                    case NAME_DESC -> customerRepository.findFilteredWithActiveRentalsSortByNameDesc(searchWord);
+                    default -> customerRepository.findFilteredWithActiveRentalsSortByNameAsc(searchWord);
+            };
+
+            case LATE_RENTAL -> switch (orderBy) {
+                    case NAME_ASC -> customerRepository.findFilteredWithLateRentalsSortByNameAsc(searchWord);
+                    case NAME_DESC -> customerRepository.findFilteredWithLateRentalsSortByNameDesc(searchWord);
+                    default -> customerRepository.findFilteredWithLateRentals(searchWord);
+            };
+            case NOT_REQUIRED -> switch (orderBy){
+                case NAME_DESC -> customerRepository.findFilteredSortByNameDesc(searchWord);
+                default -> customerRepository.findFilteredSortByNameAsc(searchWord);
+            };
+        };
     }
 }

@@ -4,6 +4,7 @@ import com.nilsson.entity.Customer;
 import com.nilsson.exception.CustomerNotFoundException;
 import com.nilsson.exception.RentalObjectNotFoundException;
 import com.nilsson.service.CustomerService;
+import com.nilsson.service.RentalService;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,10 +13,12 @@ public class CustomerList {
 
     private final InputMethod input;
     private final CustomerService customerService;
+    private final RentalService rentalService;
 
-    public CustomerList(InputMethod input, CustomerService customerService) {
+    public CustomerList(InputMethod input, CustomerService customerService, RentalService rentalService) {
         this.input = input;
         this.customerService = customerService;
+        this.rentalService = rentalService;
     }
 
     public UIState show() throws IOException {
@@ -25,7 +28,7 @@ public class CustomerList {
         Customer customer = customerFilter("uppdatera");
 
         if (customer != null) {
-            System.out.println("Vald kund: " + customer);
+            changeCustomer(customer);
         }
 
         return UIState.MAIN_MENU;
@@ -33,10 +36,11 @@ public class CustomerList {
 
     private Customer customerFilter(String action) throws IOException {
         do {
-            System.out.println("För att " + action + " Customer, skriv in dess id följt av enter");
+            System.out.println("För att " + action + " kund, skriv in dess id följt av enter");
             System.out.println("""
             För att söka enligt namn eller email skriv "s:" följt av sökord.
-            För att visa endast kunder med minst en uthyrning skriv "hyr".
+            För att visa endast kunder med minst en uthyrning skriv "hyr:" följt av "alla" för att se alla, "aktiv" för att se alla aktiva eller "sen" för att se de med minst en försening".
+            För att sortera på ett specifikt sätt skriv "o:" följt av antingen "namn_stigande" eller "namn_fallande".
             
             Du kan separera flera anrop med mellanslag.
             För att gå tillbaka skriv 0.
@@ -55,7 +59,7 @@ public class CustomerList {
                     return customerService.findById(Long.parseLong(inputChoice));
                 } catch (NumberFormatException e) {
                     System.out.println("För att välja, skriv endast ett giltigt id.");
-                } catch (CustomerNotFoundException e) {
+                } catch (CustomerNotFoundException | IllegalArgumentException e) {
                     System.out.println(e.getMessage());
                 }
                 continue;
@@ -67,17 +71,61 @@ public class CustomerList {
                     ? input.getSectionFor(inputChoice, "s:")
                     : "";
 
-            boolean requireRental = inputChoice.contains("hyr");
+            CustomerService.RequireRental requireRental = CustomerService.RequireRental.NOT_REQUIRED;
+            if (inputChoice.contains("hyr:")){
+                switch (input.getSectionFor(inputChoice, "hyr:")){
+                    case "alla" -> requireRental = CustomerService.RequireRental.ANY_RENTAL;
+                    case "aktiv" -> requireRental = CustomerService.RequireRental.ACTIVE_RENTAL;
+                    case "sen" -> requireRental = CustomerService.RequireRental.LATE_RENTAL;
+                }
+            }
+
+            CustomerService.SortOrder orderBy = CustomerService.SortOrder.DEFAULT;
+            if(inputChoice.contains("o:")) {
+                switch (input.getSectionFor(inputChoice, "o:")){
+                    case "namn_stigande" -> orderBy = CustomerService.SortOrder.NAME_ASC;
+                    case "namn_fallande" -> orderBy = CustomerService.SortOrder.NAME_DESC;
+                }
+            }
 
             List<Customer> customers =
-                    customerService.findAllFiltered(search, requireRental);
+                    customerService.findAllFiltered(search, requireRental, orderBy);
 
+            // ---- Skriv ut  ----
             if (customers.isEmpty()) {
                 System.out.println("Inga kunder matchar sökningen");
                 continue;
             }
 
-            customers.forEach(System.out::println);
+            switch (requireRental) {
+                case ANY_RENTAL -> {
+                    for (Customer customer : customers) {
+                        System.out.println(customer);
+                        System.out.println("Alla uthyrningar:");
+                        rentalService.findAllByCustomerId(customer.getId()).forEach(System.out::println);
+                        System.out.println();
+                    }
+                }
+                case ACTIVE_RENTAL -> {
+                    for (Customer customer : customers) {
+                        System.out.println(customer);
+                        System.out.println("Aktiva uthyrningar:");
+                        //TODO ändra till aktiva uthyrningar
+                        rentalService.findAllByCustomerId(customer.getId()).forEach(System.out::println);
+                        System.out.println();
+                    }
+                }
+                case LATE_RENTAL -> {
+                    for (Customer customer : customers) {
+                        System.out.println(customer);
+                        System.out.println("Försenade uthyrningar:");
+                        //TODO ändra till försenade uthyrningar
+                        rentalService.findAllByCustomerId(customer.getId()).forEach(System.out::println);
+                        System.out.println();
+                    }
+                }
+                default -> customers.forEach(System.out::println);
+            }
 
         } while (true);
     }
@@ -88,6 +136,7 @@ public class CustomerList {
         System.out.println("--------------------");
 
         do {
+            System.out.println("Ändrar: " + customer);
             System.out.println("""
                 För att ändra namn skriv "n:" följt av nytt namn.
                 För att ändra email skriv "e:" följt av ny email.
@@ -121,9 +170,12 @@ public class CustomerList {
             } else if (changeInput.startsWith("e:")) {
                 String newEmail = changeInput.substring(2).trim();
 
-                customer.setEmail(newEmail);
-                System.out.println("Email uppdaterad.");
-
+                if(newEmail.isBlank()) {
+                    System.out.println("Mail får inte vara tomt");
+                }else {
+                    customer.setEmail(newEmail);
+                    System.out.println("Email uppdaterad.");
+                }
             } else {
                 System.out.println("Ej ändrad.");
             }

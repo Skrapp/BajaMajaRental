@@ -38,7 +38,7 @@ public class Main {
                         decorationService,
                         platformService);
         try {
-            uiManager.run(UIState.LIST_RENTAL_OBJECTS);
+            uiManager.run(UIState.MAIN_MENU);
 
         } catch (IOException e){
             throw new RuntimeException(e);

@@ -48,7 +48,7 @@ public class UIManager {
                     new RentalCreate(input, rentalService, customerService, bajaMajaService, platformService, decorationService)
                             .show();
             case END_RENTAL -> new RentalReturn(input, rentalService, customerService).show();
-            case LIST_CUSTOMERS -> new CustomerList(input, customerService).show();
+            case LIST_CUSTOMERS -> new CustomerList(input, customerService, rentalService).show();
             case CREATE_NEW_CUSTOMER -> new CustomerCreate(input, customerService).show();
             default -> {
                 System.out.println("Denna UIState finns inte: " + uiState.name() + ". Återgår till huvudmeny.");

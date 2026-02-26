@@ -13,5 +13,15 @@ public interface CustomerRepo {
 
     List<Customer> findAll();
 
-    List<Customer> findAllFiltered(String searchWord, boolean requireRentals);
+    List<Customer> findFilteredWithAnyRentalsSortByNameAsc(String searchWord);
+    List<Customer> findFilteredWithAnyRentalsSortByNameDesc(String searchWord);
+    List<Customer> findFilteredWithActiveRentalsSortByNameAsc(String searchWord);
+    List<Customer> findFilteredWithActiveRentalsSortByNameDesc(String searchWord);
+    List<Customer> findFilteredWithLateRentalsSortByNameAsc(String searchWord);
+    List<Customer> findFilteredWithLateRentalsSortByNameDesc(String searchWord);
+    List<Customer> findFilteredWithLateRentals(String searchWord);
+    List<Customer> findFilteredSortByNameAsc(String searchWord);
+    List<Customer> findFilteredSortByNameDesc(String searchWord);
+
+    List<Customer> findFiltered(String searchWord, boolean requireRentals);
 }

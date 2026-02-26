@@ -62,7 +62,7 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
     /**
      *Filtrerar enligt de som är tillgängliga en specifik dag, är handikappanpassade och ingående parametrar.
      * @param availableDate Vilket datum som objektet ska vara tillgängligt
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i beskrivning och namn. Skriv "" för att inte filtrera enligt sökord
      * @param minimumRate Minsta kostnaden för en artikel.
      * @param maximumRate Största kostnaden för en artikel.
      * @return returnerar en lista av BajaMajas enligt filtreringen
@@ -101,7 +101,7 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
     /**
      *Filtrerar enligt de som är tillgängliga en specifik dag och ingående parametrar.
      * @param availableDate Vilket datum som objektet ska vara tillgängligt
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i beskrivning och namn. Skriv "" för att inte filtrera enligt sökord
      * @param minimumRate Minsta kostnaden för en artikel.
      * @param maximumRate Största kostnaden för en artikel.
      * @return returnerar en lista av BajaMajas enligt filtreringen
@@ -138,7 +138,7 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
 
     /**
      *Filtrerar enligt de som är handikappanpassade och ingående parametrar.
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i beskrivning och namn. Skriv "" för att inte filtrera enligt sökord
      * @param minimumRate Minsta kostnaden för en artikel.
      * @param maximumRate Största kostnaden för en artikel.
      * @return returnerar en lista av BajaMajas enligt filtreringen
@@ -167,7 +167,7 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
 
     /**
      *Filtrerar enligt ingående parametrar.
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i beskrivning och namn. Skriv "" för att inte filtrera enligt sökord
      * @param minimumRate Minsta kostnaden för en artikel.
      * @param maximumRate Största kostnaden för en artikel.
      * @return returnerar en lista av BajaMajas enligt filtreringen

@@ -56,7 +56,7 @@ public class PlatformRepoImpl implements PlatformRepo{
     /**
      *Filtrerar enligt de som är tillgängliga en specifik dag, är kompatibla med specifik BajaMaja och ingående parametrar.
      * @param availableDate Vilket datum som artikeln ska vara tillgängligt
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i beskrivning och namn. Skriv "" för att inte filtrera enligt sökord
      * @param minimumRate Minsta kostnaden för en artikel.
      * @param maximumRate Största kostnaden för en artikel.
      * @param bajaMajaId Id på BajaMaja som plattformen ska vara kompatibel med
@@ -98,7 +98,7 @@ public class PlatformRepoImpl implements PlatformRepo{
     /**
      *Filtrerar enligt de som är tillgängliga en specifik dag och ingående parametrar.
      * @param availableDate Vilket datum som artikeln ska vara tillgängligt
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i beskrivning och namn. Skriv "" för att inte filtrera enligt sökord
      * @param minimumRate Minsta kostnaden för en artikel.
      * @param maximumRate Största kostnaden för en artikel.
      * @return returnerar en lista av plattformar enligt filtreringen
@@ -135,7 +135,7 @@ public class PlatformRepoImpl implements PlatformRepo{
 
     /**
      *Filtrerar enligt de som är kompatibla med specifik BajaMaja och ingående parametrar.
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i beskrivning och namn. Skriv "" för att inte filtrera enligt sökord
      * @param minimumRate Minsta kostnaden för en artikel.
      * @param maximumRate Största kostnaden för en artikel.
      * @param bajaMajaId Id på BajaMaja som plattformen ska vara kompatibel med
@@ -167,7 +167,7 @@ public class PlatformRepoImpl implements PlatformRepo{
 
     /**
      *Filtrerar enligt ingående parametrar.
-     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param searchWord Söker i beskrivning och namn. Skriv "" för att inte filtrera enligt sökord
      * @param minimumRate Minsta kostnaden för en artikel.
      * @param maximumRate Största kostnaden för en artikel.
      * @return returnerar en lista av plattformar enligt filtreringen
