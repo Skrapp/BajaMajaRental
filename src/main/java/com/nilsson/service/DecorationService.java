@@ -57,8 +57,9 @@ public class DecorationService {
      */
     public List<Decoration> findFiltered(String searchWord, boolean requireAvailableByDate, LocalDateTime availableDate, double minimumRate, double maximumRate, List<Color> colors) {
         if(minimumRate > maximumRate && maximumRate != 0) throw new IllegalArgumentException("Minimipriset får ej vara lägre än maximipriset");
+        if(requireAvailableByDate && availableDate == null) throw new IllegalArgumentException("Datum får inte vara null om man ska söka efter datum");
 
-        if(searchWord == null) searchWord = "";
+        if(searchWord == null || searchWord.isBlank()) searchWord = "";
         if(colors == null || colors.isEmpty())  colors = List.of(Color.values());
 
         //Om man inte söker efter nåt speciellt så vill man ha allt

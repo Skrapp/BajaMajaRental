@@ -59,7 +59,7 @@ public class BajaMajaService {
      */
     public List<BajaMaja> findFiltered(String searchWord, boolean requireAvailableByDate, LocalDateTime availableDate,
                                        double minimumRate, double maximumRate, boolean requireHandicap) {
-        if(minimumRate > maximumRate && maximumRate != 0) throw new IllegalArgumentException("Minimumpriset får ej vara lägre än maximumpriset");
+        if(minimumRate > maximumRate && maximumRate != 0) throw new IllegalArgumentException("Minimipriset får ej vara lägre än maximipriset");
         if(requireAvailableByDate && availableDate == null) throw new IllegalArgumentException("Datum får inte vara null om man ska söka efter datum");
 
         if(searchWord == null || searchWord.isBlank()) searchWord = "";

@@ -7,6 +7,7 @@ import com.nilsson.exception.RentalObjectNotFoundException;
 import com.nilsson.repo.BajaMajaRepo;
 import com.nilsson.repo.PlatformRepo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,20 +53,35 @@ public class PlatformService {
     /**
      *Filtrerar enligt parametrar.
      * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
-     * @param requireAvailableToday Sätt true om det endast ska lista artiklar som inte är bokade idag
+     * @param requireAvailableByDate Sätt true om det endast ska lista artiklar som inte är bokade idag
+     * @param availableDate Datum för att se om artikel är tillgänglig, endast aktuell när requireAvailableByDate är true
      * @param minimumRate Minsta kostnaden av artikel. Sätt 0 för att inte filtrera enligt minsta
      * @param maximumRate Största kostnaden för en artikel. Sätt 0 för att inte filtrera enligt största
      * @param bajaMajaSuitableId BajaMaja som artikeln passar till. Sätt 0 eller mindre för att inte filtrera enligt passande
      * @return returnerar en lista av Platforms enligt filtreringen
      */
-    public List<Platform> findAllFiltered(String searchWord, boolean requireAvailableToday, double minimumRate, double maximumRate, Long bajaMajaSuitableId) {
-        if(searchWord == null) throw new IllegalArgumentException("Sökordet får inte vara null");
-        if(minimumRate > maximumRate && maximumRate != 0) throw new IllegalArgumentException("Minimumpriset får ej vara lägre än maximumpriset");
+    public List<Platform> findFiltered(String searchWord, boolean requireAvailableByDate, LocalDateTime availableDate, double minimumRate, double maximumRate, long bajaMajaSuitableId) {
+        if(minimumRate > maximumRate && maximumRate != 0) throw new IllegalArgumentException("Minimipriset får ej vara lägre än maximipriset");
+        if(requireAvailableByDate && availableDate == null) throw new IllegalArgumentException("Datum får inte vara null om man ska söka efter datum");
+
+        if(searchWord == null || searchWord.isBlank()) searchWord = "";
 
         //Om man inte söker efter nåt speciellt så vill man ha allt
-        if(searchWord.isBlank() && !requireAvailableToday && minimumRate <= 0 && maximumRate <= 0 && bajaMajaSuitableId <= 0)return findAll();
+        if(searchWord.isBlank() && !requireAvailableByDate && minimumRate <= 0 && maximumRate <= 0 && bajaMajaSuitableId <= 0)
+            return findAll();
 
-        return platformRepo.findAllFiltered(searchWord, requireAvailableToday,minimumRate, maximumRate, bajaMajaSuitableId);
+        //1 000 000 känns som ett tillräckligt högt tak
+        if(maximumRate <= 0) maximumRate = 1000000.0;
+
+        if(requireAvailableByDate){
+            if(bajaMajaSuitableId > 0)
+                return platformRepo.findFilteredAvailableByDateAndByBajaMaja(availableDate, searchWord, minimumRate, maximumRate, bajaMajaSuitableId);
+            return platformRepo.findFilteredAvailableByDate(availableDate, searchWord, minimumRate, maximumRate);
+        }
+        if(bajaMajaSuitableId > 0)
+            return platformRepo.findFilteredByBajaMaja(searchWord, minimumRate, maximumRate, bajaMajaSuitableId);
+
+        return platformRepo.findFiltered(searchWord,minimumRate, maximumRate);
     }
 
     public void addBajaMaja(Long platformId, long bajaMajaId) {

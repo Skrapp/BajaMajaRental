@@ -170,14 +170,18 @@ public class RentalObjectsList {
                     ? input.parseDoubleSafe(input.getSectionFor(inputChoice, "max:"))
                     : 0;
 
-            Long bajaMajaId = inputChoice.contains("b:")
+            long bajaMajaId = inputChoice.contains("b:")
                     ? input.parseLongSafe(input.getSectionFor(inputChoice, "b:"))
-                    : null;
+                    : 0;
 
             boolean availableToday = inputChoice.contains("idag");
 
             List<Platform> platforms =
-                    platformService.findAllFiltered(search, availableToday, min, max, bajaMajaId);
+                    platformService.findFiltered(search, availableToday, LocalDateTime.now(), min, max, bajaMajaId);
+
+            if(bajaMajaId > 0){
+                System.out.println("Plattformar som är kompatibla med: " + bajaMajaService.findById(bajaMajaId).getName());
+            }
 
             if (platforms.isEmpty()) {
                 System.out.println("Inga plattformar matchar sökningen");

@@ -4,7 +4,9 @@ import com.nilsson.entity.rentable.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,68 +53,141 @@ public class PlatformRepoImpl implements PlatformRepo{
         }
     }
 
+    /**
+     *Filtrerar enligt de som är tillgängliga en specifik dag, är kompatibla med specifik BajaMaja och ingående parametrar.
+     * @param availableDate Vilket datum som artikeln ska vara tillgängligt
+     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param minimumRate Minsta kostnaden för en artikel.
+     * @param maximumRate Största kostnaden för en artikel.
+     * @param bajaMajaId Id på BajaMaja som plattformen ska vara kompatibel med
+     * @return returnerar en lista av plattformar enligt filtreringen
+     */
     @Override
-    public List<Platform> findAllFiltered(String searchWord, boolean requireAvailableToday, double minimumRate, double maximumRate, Long bajaMajaId) {
+    public List<Platform> findFilteredAvailableByDateAndByBajaMaja(LocalDateTime availableDate, String searchWord, double minimumRate, double maximumRate, Long bajaMajaId) {
         try(Session session = sessionFactory.openSession()) {
-            String sql = """
-                
-                    SELECT p.*
-                FROM platforms p
+            String hql = """
+                    SELECT p
+                    FROM Platform p
+                    LEFT JOIN Rental r
+                        ON r.rentalObjectId = p.id
+                        AND r.rentalObjectType = :rentalType
+                        AND r.startDate <= :availableDate
+                        AND r.endDate >= :availableDate
+                        AND r.returnDate IS NULL
+                    INNER JOIN p.bajamajas b
+                    WHERE r.id IS NULL
+                        AND p.rentalRate >= :minimumRate
+                        AND p.rentalRate <= :maximumRate
+                        AND (p.name like :searchWord
+                            OR p.description like :searchWord)
+                        AND b.id = :bajaMajaId
                 """;
-            String joinSQL = "";
-            List<String> whereSQLList = new ArrayList<>();
 
-            //Ser vilka parametrar som är aktuella
-            if(requireAvailableToday){
-                joinSQL = """
-                    LEFT JOIN rentals r
-                        ON r.rental_Object_id = p.id
-                        AND r.rental_Object_Type = :rentalType
-                        AND r.start_Date < CURRENT_TIMESTAMP
-                        AND NOT r.returned
+            Query<Platform> query = session.createQuery(hql, Platform.class)
+                    .setParameter("rentalType", RentalObject.PLATFORM)
+                    .setParameter("availableDate", availableDate)
+                    .setParameter("minimumRate", minimumRate)
+                    .setParameter("maximumRate", maximumRate)
+                    .setParameter("searchWord", '%'+searchWord+'%')
+                    .setParameter("bajaMajaId", bajaMajaId);
+
+            return query.getResultList();
+        }
+    }
+
+    /**
+     *Filtrerar enligt de som är tillgängliga en specifik dag och ingående parametrar.
+     * @param availableDate Vilket datum som artikeln ska vara tillgängligt
+     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param minimumRate Minsta kostnaden för en artikel.
+     * @param maximumRate Största kostnaden för en artikel.
+     * @return returnerar en lista av plattformar enligt filtreringen
+     */
+    @Override
+    public List<Platform> findFilteredAvailableByDate(LocalDateTime availableDate, String searchWord, double minimumRate, double maximumRate) {
+        try(Session session = sessionFactory.openSession()) {
+            String hql = """
+                    SELECT p
+                    FROM Platform p
+                    LEFT JOIN Rental r
+                        ON r.rentalObjectId = p.id
+                        AND r.rentalObjectType = :rentalType
+                        AND r.startDate <= :availableDate
+                        AND r.endDate >= :availableDate
+                        AND r.returnDate IS NULL
+                    WHERE r.id IS NULL
+                        AND p.rentalRate >= :minimumRate
+                        AND p.rentalRate <= :maximumRate
+                        AND (p.name like :searchWord
+                            OR p.description like :searchWord)
                 """;
-                whereSQLList.add("r.id IS NULL");
-            }
-            if (minimumRate > 0){
-                whereSQLList.add("p.rental_rate >= :minimumRate");
-            }
-            if (maximumRate > 0){
-                whereSQLList.add("p.rental_rate <= :maximumRate");
-            }
-            if(!searchWord.isBlank()){
-                whereSQLList.add("(p.name  like :searchWord OR p.description like :searchWord)");
-            }
-            if (bajaMajaId > 0) {
-                joinSQL = joinSQL + """
-                INNER JOIN join_platforms_bajamajas pb
-                ON p.id = pb.platform_id
-                AND pb.bajamaja_id = :bajaMajaId
+
+            Query<Platform> query = session.createQuery(hql, Platform.class)
+                    .setParameter("rentalType", RentalObject.PLATFORM)
+                    .setParameter("availableDate", availableDate)
+                    .setParameter("minimumRate", minimumRate)
+                    .setParameter("maximumRate", maximumRate)
+                    .setParameter("searchWord", '%'+searchWord+'%');
+
+            return query.getResultList();
+        }
+    }
+
+    /**
+     *Filtrerar enligt de som är kompatibla med specifik BajaMaja och ingående parametrar.
+     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param minimumRate Minsta kostnaden för en artikel.
+     * @param maximumRate Största kostnaden för en artikel.
+     * @param bajaMajaId Id på BajaMaja som plattformen ska vara kompatibel med
+     * @return returnerar en lista av plattformar enligt filtreringen
+     */
+    @Override
+    public List<Platform> findFilteredByBajaMaja(String searchWord, double minimumRate, double maximumRate, Long bajaMajaId) {
+        try(Session session = sessionFactory.openSession()) {
+            String hql = """
+                    SELECT distinct p
+                    FROM Platform p
+                    INNER JOIN p.bajamajas b
+                    WHERE p.rentalRate >= :minimumRate
+                        AND p.rentalRate <= :maximumRate
+                        AND (p.name like :searchWord
+                            OR p.description like :searchWord)
+                        AND b.id = :bajaMajaId
                 """;
-            }
 
-            //Slår ihop till en SQL query
-            sql = sql
-                    + joinSQL
-                    + (whereSQLList.isEmpty() ? "" : " WHERE " + String.join(" AND ", whereSQLList));
+            Query<Platform> query = session.createQuery(hql, Platform.class)
+                    .setParameter("minimumRate", minimumRate)
+                    .setParameter("maximumRate", maximumRate)
+                    .setParameter("searchWord", '%'+searchWord+'%')
+                    .setParameter("bajaMajaId", bajaMajaId);
 
-            NativeQuery<Platform> query = session.createNativeQuery(sql, Platform.class);
+            return query.getResultList();
+        }
+    }
 
-            //Ställer in parametrar
-            if(requireAvailableToday){
-                query.setParameter("rentalType", RentalObject.PLATFORM.name());
-            }
-            if (minimumRate > 0){
-                query.setParameter("minimumRate", minimumRate);
-            }
-            if (maximumRate > 0){
-                query.setParameter("maximumRate", maximumRate);
-            }
-            if(!searchWord.isBlank()){
-                query.setParameter("searchWord", '%'+searchWord+'%');
-            }
-            if(bajaMajaId > 0){
-                query.setParameter("bajaMajaId", bajaMajaId);
-            }
+    /**
+     *Filtrerar enligt ingående parametrar.
+     * @param searchWord Söker i beskrivning och mail. Skriv "" för att inte filtrera enligt sökord
+     * @param minimumRate Minsta kostnaden för en artikel.
+     * @param maximumRate Största kostnaden för en artikel.
+     * @return returnerar en lista av plattformar enligt filtreringen
+     */
+    @Override
+    public List<Platform> findFiltered(String searchWord, double minimumRate, double maximumRate) {
+        try(Session session = sessionFactory.openSession()) {
+            String hql = """
+                    SELECT p
+                    FROM Platform p
+                    WHERE p.rentalRate >= :minimumRate
+                        AND p.rentalRate <= :maximumRate
+                        AND (p.name like :searchWord
+                            OR p.description like :searchWord)
+                """;
+
+            Query<Platform> query = session.createQuery(hql, Platform.class)
+                    .setParameter("minimumRate", minimumRate)
+                    .setParameter("maximumRate", maximumRate)
+                    .setParameter("searchWord", '%'+searchWord+'%');
 
             return query.getResultList();
         }
