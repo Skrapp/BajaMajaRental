@@ -76,24 +76,12 @@ public class Rental {
         return rentalObjectType;
     }
 
-    public void setRentalObjectType(RentalObject rentalObjectType) {
-        this.rentalObjectType = rentalObjectType;
-    }
-
     public Long getRentalObjectId() {
         return rentalObjectId;
     }
 
-    public void setRentalObjectId(Long rentalObjectId) {
-        this.rentalObjectId = rentalObjectId;
-    }
-
     public LocalDateTime getStartDate() {
         return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
     }
 
     public LocalDateTime getEndDate() {
@@ -114,10 +102,6 @@ public class Rental {
 
     public Double getDailyRate() {
         return dailyRate;
-    }
-
-    public void setDailyRate(Double dailyRate) {
-        this.dailyRate = dailyRate;
     }
 
     public Double getOriginalPayment() {

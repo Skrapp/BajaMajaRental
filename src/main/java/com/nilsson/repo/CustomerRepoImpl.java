@@ -68,6 +68,7 @@ public class CustomerRepoImpl implements CustomerRepo{
                     .getResultList();
         }
     }
+
     /**
      * Filtrerar enligt kunder med någon registrerad uthyrningar och ingående parametrar och sorterar enligt kundnamn i stigande ordning
      * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
@@ -84,7 +85,6 @@ public class CustomerRepoImpl implements CustomerRepo{
                             OR c.email like :searchWord)
                         ORDER BY c.name ASC
                         """;
-
 
             return session.createQuery(hql,Customer.class)
                     .setParameter("searchWord", '%'+searchWord+'%')
@@ -111,7 +111,6 @@ public class CustomerRepoImpl implements CustomerRepo{
                         ORDER BY c.name ASC
                         """;
 
-
             return session.createQuery(hql,Customer.class)
                     .setParameter("searchWord", '%'+searchWord+'%')
                     .getResultList();
@@ -136,7 +135,6 @@ public class CustomerRepoImpl implements CustomerRepo{
                             AND r.startDate < CURRENT_TIMESTAMP
                         ORDER BY c.name DESC
                         """;
-
 
             return session.createQuery(hql,Customer.class)
                     .setParameter("searchWord", '%'+searchWord+'%')
@@ -168,6 +166,7 @@ public class CustomerRepoImpl implements CustomerRepo{
                     .getResultList();
         }
     }
+
     /**
      * Filtrerar enligt kunder med försenade uthyrningar och ingående parametrar och sorterar enligt kundnamn i fallande ordning
      * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
@@ -192,6 +191,7 @@ public class CustomerRepoImpl implements CustomerRepo{
                     .getResultList();
         }
     }
+
     /**
      * Filtrerar enligt kunder med försenade uthyrningar och ingående parametrar och sorterar enligt kund med den uthyrning som är försenad mest
      * @param searchWord Söker i namn och mail. Skriv "" för att inte filtrera enligt sökord
@@ -234,7 +234,6 @@ public class CustomerRepoImpl implements CustomerRepo{
                         ORDER BY c.name ASC
                         """;
 
-
             return session.createQuery(hql,Customer.class)
                     .setParameter("searchWord", '%'+searchWord+'%')
                     .getResultList();
@@ -256,7 +255,6 @@ public class CustomerRepoImpl implements CustomerRepo{
                             OR c.email like :searchWord
                         ORDER BY c.name DESC
                         """;
-
 
             return session.createQuery(hql,Customer.class)
                     .setParameter("searchWord", '%'+searchWord+'%')

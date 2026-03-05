@@ -6,17 +6,15 @@ public class MainMenu {
     private UIManager uiManager;
     private InputMethod input;
 
-    private String divider = "---------------------";
-
     public MainMenu(UIManager uiManager, InputMethod input) {
         this.uiManager = uiManager;
         this.input = input;
     }
 
     public UIState show() throws IOException {
-        System.out.println(divider);
+        System.out.println("---------------------");
         System.out.println("Välkommen till BajaMaja Rental - För alla dina nödiga behov");
-        System.out.println(divider);
+        System.out.println("---------------------");
 
         System.out.println("""
                 Välj från menyn:

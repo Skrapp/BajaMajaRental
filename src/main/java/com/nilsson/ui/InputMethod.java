@@ -131,7 +131,12 @@ public class InputMethod {
         }
     }
 
-    public LocalDateTime getInputDate() throws IOException {
+    /**
+     * Användaren får skriva in datum och timme i formatet yyyy-mm-dd:hh tills giltigt datum ges. Skrivs 0 returneras nuvarande datum och tid
+     * @return angett datum eller nuvarande datum
+     * @throws IOException
+     */
+    public LocalDateTime getInputDateAndHour() throws IOException {
         while (true) {
             System.out.println("Skriv datum i formatet yyyy-mm-dd:hh (skriv 0 för att hyra från idag)");
             String input = reader.readLine().trim();
@@ -146,7 +151,12 @@ public class InputMethod {
         }
     }
 
-    //Separerar strängen så att endast det svar som gäller given prefix skickas tillbaka
+    /**
+     * Separerar strängen så att endast det svar som gäller given prefix skickas tillbaka. Kan ej använda mellanslag då
+     * detta separerar strängen
+     * @param entireString Hela strängen som ska sökas igenom
+     * @param prefix söker efter prefix
+     */
     public String getSectionFor(String entireString, String prefix) {
         entireString = entireString.concat(" ");
         return entireString.substring(entireString.indexOf(prefix) + prefix.length(), entireString.indexOf(" ", entireString.indexOf(prefix)));

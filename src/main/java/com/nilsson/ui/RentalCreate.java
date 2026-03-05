@@ -42,7 +42,7 @@ public class RentalCreate {
         //Välj kund
         customerService.findAll().forEach(System.out::println);
 
-        Customer customer = null;
+        Customer customer;
         while (true) {
             try {
                 Long customerId = input.getInputLong("Välj kund utifrån id (skriv 0 för att avbryta).");
@@ -131,11 +131,11 @@ public class RentalCreate {
         do{
             //Välj datum
             System.out.println("Välj startdatum.");
-            LocalDateTime startDate = input.getInputDate();
+            LocalDateTime startDate = input.getInputDateAndHour();
             System.out.println("Startdatum: " + startDate);
 
             System.out.println("Välj slutdatum.");
-            LocalDateTime endDate = input.getInputDate();
+            LocalDateTime endDate = input.getInputDateAndHour();
             System.out.println("Slutdatum: " + endDate);
 
             //Skapa Rental

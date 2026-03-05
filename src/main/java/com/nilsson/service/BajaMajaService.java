@@ -21,7 +21,7 @@ public class BajaMajaService {
         if (rentalRate < 0) throw new IllegalArgumentException("Hyrpriset måste vara 0 eller mer ");
         if(numberOfStalls < 0) throw new IllegalArgumentException("Antal  måste vara 0 eller mer");
 
-        BajaMaja bajaMaja = new BajaMaja(name.trim(), rentalRate, numberOfStalls);
+        BajaMaja bajaMaja = new BajaMaja(name.trim(), rentalRate, numberOfStalls, isHandicap);
         bajaMajaRepo.save(bajaMaja);
         return bajaMaja;
     }

@@ -141,9 +141,9 @@ public class RentalService {
     }
 
     public List<Rental> findFutureRentalsByRentalObjectId(RentalObject rentalObjectType, Long rentalObjectId){
-    if(rentalObjectId == null || rentalObjectId <= 0) throw new IllegalArgumentException("UthyrningsObjektID är inte godkänt.");
+        if(rentalObjectId == null || rentalObjectId <= 0) throw new IllegalArgumentException("UthyrningsObjektID är inte godkänt.");
 
-    return rentalRepo.findFutureRentalsByRentalObjectId(rentalObjectType, rentalObjectId);
+        return rentalRepo.findFutureRentalsByRentalObjectId(rentalObjectType, rentalObjectId);
     }
 
     private int calculateChargeableDaysBetween(LocalDateTime startDate, LocalDateTime endDate) {

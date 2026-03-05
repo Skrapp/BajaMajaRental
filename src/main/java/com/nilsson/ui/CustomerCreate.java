@@ -19,8 +19,8 @@ public class CustomerCreate {
         System.out.println("Skapa ny kund");
         System.out.println("--------------------");
 
-        String name = input.getInputNotEmpty("Namn:");
-        String email = input.getInputNotEmpty("Email:");
+        String name = input.getInputNotEmpty("Namn");
+        String email = input.getInputNotEmpty("Email");
 
         try {
             customerService.createCustomer(name, email);

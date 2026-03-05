@@ -33,7 +33,6 @@ public class BajaMajaRepoImpl implements BajaMajaRepo {
             }
             tx.commit();
         }
-
     }
 
     @Override

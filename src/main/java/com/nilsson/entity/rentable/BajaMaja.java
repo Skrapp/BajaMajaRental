@@ -34,12 +34,6 @@ public class BajaMaja {
         this.handicap = handicap;
     }
 
-    public BajaMaja(String name, double rentalRate, int numberOfStalls) {
-        this.name = name;
-        this.rentalRate = rentalRate;
-        this.numberOfStalls = numberOfStalls;
-    }
-
     protected BajaMaja() {
     }
 

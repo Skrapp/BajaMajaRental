@@ -16,9 +16,6 @@ class BajaMajaServiceTest {
     private BajaMajaRepo bajaMajaRepo;
     private BajaMajaService bajaMajaService;
 
-    /*findAllFiltered kombinerar filter korrekt
-    requireHandicap fungerar
-    availableToday filtrerar bort uthyrda*/
     @BeforeEach
     void setUp(){
         bajaMajaRepo = mock(BajaMajaRepo.class);
@@ -45,7 +42,7 @@ class BajaMajaServiceTest {
         String name = "Dubbeldäckarn";
         double rentalRate = 300;
         int numOfStalls = 2;
-        BajaMaja bajaMaja = new BajaMaja(name, rentalRate, numOfStalls);
+        BajaMaja bajaMaja = new BajaMaja(name, rentalRate, numOfStalls, true);
         setIdViaReflection(bajaMaja, 12L);
 
         BajaMaja updatedBajaMaja = bajaMajaService.update(bajaMaja);
@@ -70,7 +67,7 @@ class BajaMajaServiceTest {
         String name = null;
         double rentalRate = 300;
         int numOfStalls = 2;
-        BajaMaja bajaMaja = new BajaMaja(name, rentalRate, numOfStalls);
+        BajaMaja bajaMaja = new BajaMaja(name, rentalRate, numOfStalls, true);
         setIdViaReflection(bajaMaja, 12L);
 
         assertThrows(IllegalArgumentException.class, () -> bajaMajaService.update(bajaMaja));
@@ -84,8 +81,8 @@ class BajaMajaServiceTest {
     //kör metoden findAll om inget specifik ska filtreras
     @Test
     void findAllFiltered_usesFindAllIfNoFilterIsNeeded() {
-        BajaMaja b1 = new BajaMaja("Classic", 100, 1);
-        BajaMaja b2 = new BajaMaja("Deluxe", 200, 2);
+        BajaMaja b1 = new BajaMaja("Classic", 100, 1, true);
+        BajaMaja b2 = new BajaMaja("Deluxe", 200, 2, true);
         List<BajaMaja> bajaMajaList = new ArrayList<>();
         bajaMajaList.add(b1);
         bajaMajaList.add(b2);
@@ -107,8 +104,8 @@ class BajaMajaServiceTest {
 
     @Test
     void findAllFiltered_usesFindFilteredAvailableByDateAndHandicap() {
-        BajaMaja b1 = new BajaMaja("Classic", 100, 1);
-        BajaMaja b2 = new BajaMaja("Deluxe", 200, 2);
+        BajaMaja b1 = new BajaMaja("Classic", 100, 1, true);
+        BajaMaja b2 = new BajaMaja("Deluxe", 200, 2, true);
         b1.setHandicap(true);
         b2.setHandicap(true);
         List<BajaMaja> bajaMajaList = new ArrayList<>();

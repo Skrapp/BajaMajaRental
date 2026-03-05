@@ -1,18 +1,13 @@
 package com.nilsson.repo;
 
-import com.nilsson.entity.rentable.BajaMaja;
 import com.nilsson.entity.rentable.Color;
 import com.nilsson.entity.rentable.Decoration;
 import com.nilsson.entity.rentable.RentalObject;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
